@@ -2,31 +2,30 @@ import React, { useState, useEffect } from 'react';
 import { Sparkles, MessageCircle, Download, X, QrCode, CheckCircle, ShieldCheck } from 'lucide-react';
 import { supabase } from './supabaseClient';
 
-const PRODUCTS = [
+const FALLBACK_PRODUCTS = [
   { id: '1', title: 'ZapVitrine AI & SaaS Checkout', category: 'SaaS / Sistemas', price: 197.00, original_price: 397.00, badge: 'Mais Vendido', thumbnail: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80', description: 'Sistema completo de catálogo para WhatsApp com checkout integrado e IA.', technologies: ['React', 'Node.js', 'Supabase'] },
   { id: '2', title: 'Pulse Dash - Retro Mobile Game Source', category: 'Jogos Indie', price: 89.00, original_price: 150.00, badge: 'Lançamento', thumbnail: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=800&q=80', description: 'Kit completo de jogo arcade mobile responsivo construído em HTML5 Canvas + React.', technologies: ['React', 'HTML5 Canvas'] },
   { id: '3', title: 'Sentinela Pro - PWA Segurança', category: 'Apps Mobile', price: 147.00, original_price: 280.00, badge: 'Destaque UI', thumbnail: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80', description: 'Template PWA nativo para monitoramento em tempo real, gestão de alertas e dashboards.', technologies: ['React', 'PWA', 'Tailwind'] }
 ];
 
 export default function App() {
-  const [products, setProducts] = useState(PRODUCTS);
+  const [products, setProducts] = useState(FALLBACK_PRODUCTS);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [checkoutStep, setCheckoutStep] = useState(1);
   const [customer, setCustomer] = useState({ name: '', email: '', cpf: '' });
 
   useEffect(() => {
-    async function loadData() {
-      if (!supabase) return;
+    async function loadSupabaseProducts() {
       try {
         const { data, error } = await supabase.from('products').select('*');
         if (!error && data && data.length > 0) {
           setProducts(data);
         }
       } catch (err) {
-        console.log('A usar catálogo padrão');
+        console.log('A usar catálogo local de alta performance');
       }
     }
-    loadData();
+    loadSupabaseProducts();
   }, []);
 
   const handleCheckout = (e) => {
@@ -38,6 +37,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-cyan-500 selection:text-slate-950">
       
+      {/* HEADER */}
       <header className="sticky top-0 z-40 backdrop-blur-md border-b border-slate-800 bg-slate-900/90">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2 cursor-pointer">
@@ -49,15 +49,17 @@ export default function App() {
             <span className="text-base font-black tracking-tight">FORJA<span className="text-cyan-400">DIGITAL</span></span>
           </div>
           <span className="text-xs bg-emerald-500/10 text-emerald-400 font-mono px-3 py-1 rounded-full border border-emerald-500/20 flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> STORE PRO
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> SUPABASE SYNC
           </span>
         </div>
       </header>
 
+      {/* WHATSAPP FLUTUANTE */}
       <a href="https://wa.me/5583999999999?text=Olá,%20gostaria%20de%20tirar%20dúvidas%20sobre%20os%20templates%20da%20Forja%20Digital!" target="_blank" rel="noreferrer" className="fixed bottom-5 right-5 z-50 p-4 bg-emerald-500 text-slate-950 rounded-full shadow-2xl hover:scale-110 transition flex items-center justify-center">
         <MessageCircle className="w-6 h-6 fill-current" />
       </a>
 
+      {/* HERO & CATÁLOGO */}
       <main className="max-w-7xl mx-auto px-4 py-10 space-y-10">
         <div className="text-center space-y-3">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-400 text-xs font-semibold border border-cyan-500/20">
@@ -98,6 +100,7 @@ export default function App() {
         </div>
       </main>
 
+      {/* CHECKOUT MODAL */}
       {selectedProduct && (
         <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
           <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 space-y-5 relative shadow-2xl">
@@ -111,7 +114,7 @@ export default function App() {
             {checkoutStep === 1 ? (
               <form onSubmit={handleCheckout} className="space-y-3">
                 <input type="text" placeholder="Seu Nome Completo" required value={customer.name} onChange={e => setCustomer({...customer, name: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-500" />
-                <input type="email" placeholder="Seu E-mail para receber a licença" required value={customer.email} onChange={e => setCustomer({...customer, email: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-500" />
+                <input type="emailpx" placeholder="Seu E-mail para receber a licença" required value={customer.email} onChange={e => setCustomer({...customer, email: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-500" />
                 <input type="text" placeholder="CPF (Apenas números)" required value={customer.cpf} onChange={e => setCustomer({...customer, cpf: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white font-mono focus:outline-none focus:border-cyan-500" />
                 
                 <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 flex items-center justify-between text-xs">

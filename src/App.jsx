@@ -87,22 +87,25 @@ export default function App() {
   const totalRevenue = dbOrders.filter(o => o.status === 'approved').reduce((acc, curr) => acc + (Number(curr.amount) || 0), 0);
   const totalApprovedOrders = dbOrders.filter(o => o.status === 'approved').length;
 
+  // AUTENTICAÇÃO FLEXÍVEL: ACEITA QUALQUER E-MAIL E SENHA INFORMADOS E SALVA LOCALMENTE
   const handleAdminLogin = (e) => {
     e.preventDefault();
     const cleanEmail = sanitizeInput(adminAuth.email);
     const cleanPass = sanitizeInput(adminAuth.password);
 
-    if (cleanEmail === 'admin@forjadigital.com' && cleanPass === 'admin123') {
+    if (cleanEmail && cleanPass.length >= 4) {
       setIsAdminLoggedIn(true);
       localStorage.setItem('fd_admin_session', 'true');
+      localStorage.setItem('fd_admin_email', cleanEmail);
     } else {
-      alert('Credenciais incorretas!');
+      alert('Por favor, insira um e-mail válido e uma senha com pelo menos 4 dígitos.');
     }
   };
 
   const handleAdminLogout = () => {
     setIsAdminLoggedIn(false);
     localStorage.removeItem('fd_admin_session');
+    localStorage.removeItem('fd_admin_email');
   };
 
   const getCleanProductUrl = (prod) => {
@@ -425,10 +428,10 @@ export default function App() {
               
               {!isAdminLoggedIn ? (
                 <form onSubmit={handleAdminLogin} className="space-y-4 max-w-sm mx-auto">
-                  <p className="text-xs text-slate-400 text-center">Entre com suas credenciais de e-mail e senha:</p>
+                  <p className="text-xs text-slate-400 text-center">Cadastre ou entre com seu e-mail e senha:</p>
                   <input 
                     type="email" 
-                    placeholder="Seu E-mail de Administrador" 
+                    placeholder="Seu E-mail (ex: seu@email.com)" 
                     required 
                     value={adminAuth.email} 
                     onChange={e => setAdminAuth({ ...adminAuth, email: e.target.value })} 
@@ -436,20 +439,20 @@ export default function App() {
                   />
                   <input 
                     type="password" 
-                    placeholder="Sua Senha de Acesso" 
+                    placeholder="Sua Senha (mínimo 4 dígitos)" 
                     required 
                     value={adminAuth.password} 
                     onChange={e => setAdminAuth({ ...adminAuth, password: e.target.value })} 
                     className="w-full p-4 bg-slate-950 border border-slate-800 rounded-2xl text-xs text-white focus:outline-none focus:border-emerald-500" 
                   />
                   <button type="submit" className="w-full py-4 bg-gradient-to-r from-emerald-400 to-teal-500 text-slate-950 font-black text-xs uppercase rounded-2xl shadow-lg shadow-emerald-500/25">
-                    Entrar no Painel
+                    Cadastrar e Entrar no Painel
                   </button>
                 </form>
               ) : (
                 <div className="space-y-6">
                   <div className="flex items-center justify-between pb-4 border-b border-slate-800">
-                    <p className="text-xs text-emerald-400 font-bold">● Sessão Ativa: admin@forjadigital.com</p>
+                    <p className="text-xs text-emerald-400 font-bold">● Sessão Ativa: {localStorage.getItem('fd_admin_email') || 'Administrador'}</p>
                     <button onClick={handleAdminLogout} className="text-[10px] text-red-400 font-bold hover:underline">Sair / Logout</button>
                   </div>
 

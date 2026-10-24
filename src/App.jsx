@@ -13,42 +13,6 @@ const INITIAL_PRODUCTS = [
     description: 'Sistema completo de catálogo para WhatsApp com checkout integrado e automação de IA.', 
     techs: ['React', 'Node.js', 'Supabase'],
     download_url: 'https://zap-vitrine-sigma.vercel.app'
-  },
-  { 
-    id: '2', 
-    title: 'Pulse Dash - Retro Mobile Game Source', 
-    category: 'Jogos Indie', 
-    price: 89.00, 
-    original_price: 150.00, 
-    badge: 'Lançamento', 
-    thumbnail: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=800&q=80', 
-    description: 'Kit completo de jogo arcade mobile responsivo construído em HTML5 Canvas + React.', 
-    techs: ['React', 'HTML5 Canvas'],
-    download_url: 'https://pulse-dash.vercel.app'
-  },
-  { 
-    id: '3', 
-    title: 'Sentinela Pro - PWA Segurança', 
-    category: 'Apps Mobile', 
-    price: 147.00, 
-    original_price: 280.00, 
-    badge: 'Destaque UI', 
-    thumbnail: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80', 
-    description: 'Template PWA nativo para monitoramento em tempo real, gestão de alertas e dashboards.', 
-    techs: ['React', 'PWA', 'Tailwind'],
-    download_url: 'https://sentinela-one.vercel.app'
-  },
-  { 
-    id: '4', 
-    title: 'RotaFixa - Mobilidade Urbana & Tarifa', 
-    category: 'Apps Mobile', 
-    price: 120.00, 
-    original_price: 250.00, 
-    badge: 'Novo', 
-    thumbnail: 'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?auto=format&fit=crop&w=800&q=80', 
-    description: 'App de mobilidade local com calculadora de tarifas personalizada e pagamento PIX direto.', 
-    techs: ['React', 'Tailwind', 'Supabase'],
-    download_url: 'https://rotafixa.vercel.app'
   }
 ];
 

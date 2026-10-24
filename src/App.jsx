@@ -12,7 +12,7 @@ const INITIAL_PRODUCTS = [
     thumbnail: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80', 
     description: 'Sistema completo de catálogo para WhatsApp com checkout integrado e automação de IA.', 
     techs: ['React', 'Node.js', 'Supabase'],
-    download_url: 'https://zap-vitrine-sigma.vercel.app/download.zip'
+    download_url: 'https://zap-vitrine-sigma.vercel.app'
   },
   { 
     id: '2', 
@@ -24,7 +24,7 @@ const INITIAL_PRODUCTS = [
     thumbnail: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=800&q=80', 
     description: 'Kit completo de jogo arcade mobile responsivo construído em HTML5 Canvas + React.', 
     techs: ['React', 'HTML5 Canvas'],
-    download_url: 'https://pulse-dash.vercel.app/download.zip'
+    download_url: 'https://pulse-dash.vercel.app'
   },
   { 
     id: '3', 
@@ -36,7 +36,7 @@ const INITIAL_PRODUCTS = [
     thumbnail: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80', 
     description: 'Template PWA nativo para monitoramento em tempo real, gestão de alertas e dashboards.', 
     techs: ['React', 'PWA', 'Tailwind'],
-    download_url: 'https://sentinela-one.vercel.app/download.zip'
+    download_url: 'https://sentinela-one.vercel.app'
   },
   { 
     id: '4', 
@@ -48,7 +48,7 @@ const INITIAL_PRODUCTS = [
     thumbnail: 'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?auto=format&fit=crop&w=800&q=80', 
     description: 'App de mobilidade local com calculadora de tarifas personalizada e pagamento PIX direto.', 
     techs: ['React', 'Tailwind', 'Supabase'],
-    download_url: 'https://rotafixa.vercel.app/download.zip'
+    download_url: 'https://rotafixa.vercel.app'
   },
   { 
     id: '5', 
@@ -60,7 +60,7 @@ const INITIAL_PRODUCTS = [
     thumbnail: 'https://images.unsplash.com/photo-1553877522-43269d4ea984?auto=format&fit=crop&w=800&q=80', 
     description: 'Acesso vitalício ou anual a todos os códigos-fonte atuais e futuros lançamentos da Forja Digital.', 
     techs: ['All Access', 'VIP Support'],
-    download_url: 'https://zap-vitrine-sigma.vercel.app/download.zip'
+    download_url: 'https://zap-vitrine-sigma.vercel.app'
   }
 ];
 
@@ -97,7 +97,7 @@ export default function App() {
         if (prodData && prodData.length > 0) {
           const updatedProd = prodData.map(p => {
             if (p.title.includes('ZapVitrine')) {
-              return { ...p, download_url: 'https://zap-vitrine-sigma.vercel.app/download.zip' };
+              return { ...p, download_url: 'https://zap-vitrine-sigma.vercel.app' };
             }
             return p;
           });
@@ -129,10 +129,12 @@ export default function App() {
     }
   };
 
-  const getProductDownloadUrl = (prod) => {
-    if (!prod) return 'https://zap-vitrine-sigma.vercel.app/download.zip';
-    if (prod.title.includes('ZapVitrine')) return 'https://zap-vitrine-sigma.vercel.app/download.zip';
-    return prod.download_url || 'https://zap-vitrine-sigma.vercel.app/download.zip';
+  const getCleanProductUrl = (prod) => {
+    if (!prod) return 'https://zap-vitrine-sigma.vercel.app';
+    if (prod.title && prod.title.includes('ZapVitrine')) return 'https://zap-vitrine-sigma.vercel.app';
+    
+    let url = prod.download_url || 'https://zap-vitrine-sigma.vercel.app';
+    return url.replace('/download.zip', '');
   };
 
   const handleGeneratePix = async (e) => {
@@ -141,7 +143,7 @@ export default function App() {
     setLoadingPix(true);
 
     const orderCode = `ORD-${Math.floor(1000 + Math.random() * 9000)}`;
-    const downloadUrl = getProductDownloadUrl(selectedProduct);
+    const cleanUrl = getCleanProductUrl(selectedProduct);
 
     try {
       const res = await fetch('/api/create-pix', {
@@ -179,7 +181,7 @@ export default function App() {
             amount: selectedProduct.price,
             status: 'pending',
             license_key: `FORJA-${Math.random().toString(36).substring(2, 8).toUpperCase()}-2026`,
-            download_url: downloadUrl,
+            download_url: cleanUrl,
             ref_code: form.refCode || 'DIRETO'
           }
         ]);
@@ -190,12 +192,12 @@ export default function App() {
   };
 
   const handleApprovePayment = async () => {
-    const downloadUrl = getProductDownloadUrl(selectedProduct);
+    const cleanUrl = getCleanProductUrl(selectedProduct);
 
     if (supabase) {
       await supabase
         .from('orders')
-        .update({ status: 'approved', download_url: downloadUrl })
+        .update({ status: 'approved', download_url: cleanUrl })
         .eq('customer_email', form.email);
     }
 
@@ -207,7 +209,7 @@ export default function App() {
           email: form.email,
           name: form.name,
           productTitle: selectedProduct.title,
-          downloadUrl: downloadUrl
+          downloadUrl: cleanUrl
         })
       });
     } catch (e) {
@@ -230,7 +232,11 @@ export default function App() {
           .eq('customer_email', searchEmail);
 
         if (!error && data && data.length > 0) {
-          setMyOrders(data);
+          const formattedOrders = data.map(o => ({
+            ...o,
+            download_url: o.download_url ? o.download_url.replace('/download.zip', '') : 'https://zap-vitrine-sigma.vercel.app'
+          }));
+          setMyOrders(formattedOrders);
         } else {
           setMyOrders([
             { 
@@ -238,7 +244,7 @@ export default function App() {
               product_title: 'ZapVitrine AI & SaaS', 
               status: 'approved', 
               license_key: 'FORJA-PRO-884X-2026',
-              download_url: 'https://zap-vitrine-sigma.vercel.app/download.zip'
+              download_url: 'https://zap-vitrine-sigma.vercel.app'
             }
           ]);
         }
@@ -249,7 +255,7 @@ export default function App() {
             product_title: 'ZapVitrine AI & SaaS', 
             status: 'approved', 
             license_key: 'FORJA-PRO-884X-2026',
-            download_url: 'https://zap-vitrine-sigma.vercel.app/download.zip'
+            download_url: 'https://zap-vitrine-sigma.vercel.app'
           }
         ]);
       }
@@ -273,7 +279,7 @@ export default function App() {
       description: newProd.description,
       thumbnail: newProd.thumbnail || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80',
       techs: ['React', 'Node.js'],
-      download_url: newProd.download_url || 'https://zap-vitrine-sigma.vercel.app/download.zip'
+      download_url: newProd.download_url || 'https://zap-vitrine-sigma.vercel.app'
     };
 
     if (supabase) {
@@ -324,7 +330,7 @@ export default function App() {
           <>
             <div className="text-center space-y-3">
               <h1 className="text-3xl sm:text-5xl font-black">Templates & Códigos Prontos</h1>
-              <p className="text-sm text-slate-400">Software pronto, landing pages e apps integrados ao Supabase. Baixe instantaneamente após o PIX.</p>
+              <p className="text-sm text-slate-400">Software pronto, landing pages e apps integrados ao Supabase. Baixe e acesse instantaneamente após o PIX.</p>
             </div>
 
             <div className="space-y-4 max-w-3xl mx-auto">
@@ -409,8 +415,8 @@ export default function App() {
                   <div key={idx} className="p-4 bg-slate-950 border border-slate-800 rounded-xl space-y-2 text-xs">
                     <p className="font-bold text-white">{ord.product_title}</p>
                     <p className="font-mono text-cyan-400 text-[10px]">Chave: {ord.license_key}</p>
-                    <a href={ord.download_url} download target="_blank" rel="noopener noreferrer" className="block w-full py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black uppercase rounded-xl text-center transition">
-                      📥 BAIXAR FICHEIRO / CÓDIGO (.ZIP)
+                    <a href={ord.download_url} target="_blank" rel="noopener noreferrer" className="block w-full py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black uppercase rounded-xl text-center transition">
+                      🚀 ACESSAR APLICATIVO / INSTALAR PWA
                     </a>
                   </div>
                 ))}
@@ -488,7 +494,7 @@ export default function App() {
                   <input type="number" placeholder="Preço (R$)" required value={newProd.price} onChange={e => setNewProd({...newProd, price: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white" />
                   <textarea placeholder="Descrição curta" required value={newProd.description} onChange={e => setNewProd({...newProd, description: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white h-20" />
                   <input type="url" placeholder="URL da Imagem (Thumbnail)" value={newProd.thumbnail} onChange={e => setNewProd({...newProd, thumbnail: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white" />
-                  <input type="url" placeholder="Link de Download do Ficheiro (.ZIP) na Vercel" required value={newProd.download_url} onChange={e => setNewProd({...newProd, download_url: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white" />
+                  <input type="url" placeholder="Link do App na Vercel (ex: https://zap-vitrine-sigma.vercel.app)" required value={newProd.download_url} onChange={e => setNewProd({...newProd, download_url: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white" />
                   <button type="submit" className="w-full py-3 bg-cyan-500 text-slate-950 font-black text-xs uppercase rounded-xl">Publicar Produto no Supabase</button>
                 </form>
               </div>
@@ -497,7 +503,7 @@ export default function App() {
         )}
       </main>
 
-      {/* CHECKOUT MODAL - BOTAO DIRETO DE DOWNLOAD DO FICHEIRO NA VERCEL */}
+      {/* CHECKOUT MODAL - REDIRECIONA LIMPO PARA A PAGINA DO APP NA VERCEL */}
       {selectedProduct && (
         <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 space-y-4 relative">
@@ -542,18 +548,17 @@ export default function App() {
                 </div>
                 <div>
                   <h4 className="text-base font-bold text-white">Pagamento Confirmado!</h4>
-                  <p className="text-xs text-slate-400 mt-1">Seu download está liberado para: <strong className="text-white">{selectedProduct.title}</strong></p>
+                  <p className="text-xs text-slate-400 mt-1">Seu acesso ao aplicativo foi liberado com sucesso.</p>
                 </div>
                 <div className="p-4 bg-slate-950 border border-slate-800 rounded-2xl text-left space-y-2">
-                  <p className="text-[10px] text-slate-500 uppercase font-bold">Link de Download na Vercel:</p>
+                  <p className="text-[10px] text-slate-500 uppercase font-bold">Link Válido do App na Vercel:</p>
                   <a 
-                    href={getProductDownloadUrl(selectedProduct)} 
-                    download
+                    href={getCleanProductUrl(selectedProduct)} 
                     target="_blank" 
                     rel="noopener noreferrer" 
                     className="block w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs uppercase rounded-xl text-center shadow-lg transition"
                   >
-                    📥 BAIXAR FICHEIRO / CÓDIGO (.ZIP)
+                    🚀 ACESSAR APLICATIVO / INSTALAR PWA
                   </a>
                 </div>
                 <button 

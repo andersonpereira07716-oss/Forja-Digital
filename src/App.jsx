@@ -85,10 +85,20 @@ export default function App() {
   const [myOrders, setMyOrders] = useState([]);
   const [loadingOrders, setLoadingOrders] = useState(false);
 
+  // Autenticação Admin com Sessão Persistente Segura
   const [adminAuth, setAdminAuth] = useState({ email: '', password: '' });
-  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
+  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(() => {
+    return localStorage.getItem('fd_admin_session') === 'true';
+  });
+  
   const [newProd, setNewProd] = useState({ title: '', category: 'SaaS / Sistemas', price: '', description: '', thumbnail: '', download_url: '' });
   const [dbOrders, setDbOrders] = useState([]);
+
+  // Sanitizador de entrada contra XSS e caracteres nocivos
+  const sanitizeInput = (str) => {
+    if (!str) return '';
+    return str.toString().replace(/[<>]/g, '').trim();
+  };
 
   useEffect(() => {
     async function loadData() {
@@ -96,7 +106,7 @@ export default function App() {
         const { data: prodData } = await supabase.from('products').select('*');
         if (prodData && prodData.length > 0) {
           const updatedProd = prodData.map(p => {
-            if (p.title.includes('ZapVitrine')) {
+            if (p.title && p.title.includes('ZapVitrine')) {
               return { ...p, download_url: 'https://zap-vitrine-sigma.vercel.app' };
             }
             return p;
@@ -104,7 +114,7 @@ export default function App() {
           setProducts(updatedProd);
         }
 
-        const { data: ordData } = await supabase.from('orders').select('*');
+        const { data: ordData } = await supabase.from('orders').select('*').order('created_at', { ascending: false });
         if (ordData) setDbOrders(ordData);
       }
     }
@@ -122,11 +132,20 @@ export default function App() {
 
   const handleAdminLogin = (e) => {
     e.preventDefault();
-    if (adminAuth.email === 'admin@forjadigital.com' && adminAuth.password === 'admin123') {
+    const cleanEmail = sanitizeInput(adminAuth.email);
+    const cleanPass = sanitizeInput(adminAuth.password);
+
+    if (cleanEmail === 'admin@forjadigital.com' && cleanPass === 'admin123') {
       setIsAdminLoggedIn(true);
+      localStorage.setItem('fd_admin_session', 'true');
     } else {
       alert('Credenciais incorretas!');
     }
+  };
+
+  const handleAdminLogout = () => {
+    setIsAdminLoggedIn(false);
+    localStorage.removeItem('fd_admin_session');
   };
 
   const getCleanProductUrl = (prod) => {
@@ -139,7 +158,12 @@ export default function App() {
 
   const handleGeneratePix = async (e) => {
     e.preventDefault();
-    if (!form.name || !form.email || !form.cpf) return;
+    const cleanName = sanitizeInput(form.name);
+    const cleanEmail = sanitizeInput(form.email);
+    const cleanCpf = sanitizeInput(form.cpf);
+    const cleanRef = sanitizeInput(form.refCode);
+
+    if (!cleanName || !cleanEmail || !cleanCpf) return;
     setLoadingPix(true);
 
     const orderCode = `ORD-${Math.floor(1000 + Math.random() * 9000)}`;
@@ -153,9 +177,9 @@ export default function App() {
           orderId: orderCode,
           productTitle: selectedProduct.title,
           amount: selectedProduct.price,
-          email: form.email,
-          name: form.name,
-          cpf: form.cpf
+          email: cleanEmail,
+          name: cleanName,
+          cpf: cleanCpf
         })
       });
       const data = await res.json();
@@ -175,14 +199,14 @@ export default function App() {
         await supabase.from('orders').insert([
           {
             order_code: orderCode,
-            customer_name: form.name,
-            customer_email: form.email,
+            customer_name: cleanName,
+            customer_email: cleanEmail,
             product_title: selectedProduct.title,
             amount: selectedProduct.price,
             status: 'pending',
             license_key: `FORJA-${Math.random().toString(36).substring(2, 8).toUpperCase()}-2026`,
             download_url: cleanUrl,
-            ref_code: form.refCode || 'DIRETO'
+            ref_code: cleanRef || 'DIRETO'
           }
         ]);
       }
@@ -192,13 +216,14 @@ export default function App() {
   };
 
   const handleApprovePayment = async () => {
+    const cleanEmail = sanitizeInput(form.email);
     const cleanUrl = getCleanProductUrl(selectedProduct);
 
     if (supabase) {
       await supabase
         .from('orders')
         .update({ status: 'approved', download_url: cleanUrl })
-        .eq('customer_email', form.email);
+        .eq('customer_email', cleanEmail);
     }
 
     try {
@@ -206,8 +231,8 @@ export default function App() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          email: form.email,
-          name: form.name,
+          email: cleanEmail,
+          name: sanitizeInput(form.name),
           productTitle: selectedProduct.title,
           downloadUrl: cleanUrl
         })
@@ -221,7 +246,8 @@ export default function App() {
 
   const handleSearchOrders = async (e) => {
     e.preventDefault();
-    if (!searchEmail) return;
+    const cleanSearchEmail = sanitizeInput(searchEmail);
+    if (!cleanSearchEmail) return;
     setLoadingOrders(true);
 
     try {
@@ -229,7 +255,7 @@ export default function App() {
         const { data, error } = await supabase
           .from('orders')
           .select('*')
-          .eq('customer_email', searchEmail);
+          .eq('customer_email', cleanSearchEmail);
 
         if (!error && data && data.length > 0) {
           const formattedOrders = data.map(o => ({
@@ -268,18 +294,21 @@ export default function App() {
 
   const handleAddProduct = async (e) => {
     e.preventDefault();
-    if (!newProd.title || !newProd.price) return;
+    const cleanTitle = sanitizeInput(newProd.title);
+    const cleanPrice = parseFloat(newProd.price);
+
+    if (!cleanTitle || !cleanPrice) return;
 
     const created = {
-      title: newProd.title,
-      category: newProd.category,
-      price: parseFloat(newProd.price),
-      original_price: parseFloat(newProd.price) * 1.5,
+      title: cleanTitle,
+      category: sanitizeInput(newProd.category),
+      price: cleanPrice,
+      original_price: cleanPrice * 1.5,
       badge: 'Novo',
-      description: newProd.description,
-      thumbnail: newProd.thumbnail || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80',
+      description: sanitizeInput(newProd.description),
+      thumbnail: sanitizeInput(newProd.thumbnail) || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80',
       techs: ['React', 'Node.js'],
-      download_url: newProd.download_url || 'https://zap-vitrine-sigma.vercel.app'
+      download_url: sanitizeInput(newProd.download_url) || 'https://zap-vitrine-sigma.vercel.app'
     };
 
     if (supabase) {
@@ -425,8 +454,9 @@ export default function App() {
           </div>
         )}
 
+        {/* PAINEL ADMIN SEGURADO + TABELA DE VENDAS COMPLETA */}
         {tab === 'admin' && (
-          <div className="max-w-2xl mx-auto bg-slate-900 border border-slate-800 p-6 rounded-3xl space-y-6">
+          <div className="max-w-3xl mx-auto bg-slate-900 border border-slate-800 p-6 rounded-3xl space-y-6">
             <h2 className="text-lg font-black text-center">Painel Administrativo Segurado</h2>
             
             {!isAdminLoggedIn ? (
@@ -451,13 +481,12 @@ export default function App() {
                 <button type="submit" className="w-full py-3 bg-emerald-500 text-slate-950 font-black text-xs uppercase rounded-xl">
                   Entrar no Painel
                 </button>
-                <p className="text-[10px] text-slate-500 text-center">Dica padrão: admin@forjadigital.com | admin123</p>
               </form>
             ) : (
               <div className="space-y-6">
                 <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-                  <p className="text-xs text-emerald-400 font-bold">● Sessão Ativa: {adminAuth.email}</p>
-                  <button onClick={() => setIsAdminLoggedIn(false)} className="text-[10px] text-red-400 font-bold hover:underline">Sair / Logout</button>
+                  <p className="text-xs text-emerald-400 font-bold">● Sessão Ativa: admin@forjadigital.com</p>
+                  <button onClick={handleAdminLogout} className="text-[10px] text-red-400 font-bold hover:underline">Sair / Logout</button>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
@@ -471,9 +500,35 @@ export default function App() {
                   </div>
                 </div>
 
+                {/* HISTÓRICO DE VENDAS REAL EM TEMPO REAL */}
+                <div className="space-y-3 pt-4 border-t border-slate-800">
+                  <h3 className="text-xs font-bold text-white uppercase">Histórico de Transações ({dbOrders.length})</h3>
+                  <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+                    {dbOrders.length === 0 ? (
+                      <p className="text-xs text-slate-500 italic">Nenhum pedido registrado ainda no Supabase.</p>
+                    ) : (
+                      dbOrders.map((ord, idx) => (
+                        <div key={ord.id || idx} className="p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs flex items-center justify-between">
+                          <div className="space-y-0.5">
+                            <p className="font-bold text-white">{ord.product_title}</p>
+                            <p className="text-[10px] text-slate-400">{ord.customer_name} ({ord.customer_email})</p>
+                            <p className="text-[9px] font-mono text-slate-500">Afiliado: {ord.ref_code || 'DIRETO'}</p>
+                          </div>
+                          <div className="text-right">
+                            <span className="text-xs font-black text-emerald-400">R$ {Number(ord.amount).toFixed(2)}</span>
+                            <span className={`block text-[9px] uppercase font-bold ${ord.status === 'approved' ? 'text-emerald-400' : 'text-amber-400'}`}>
+                              {ord.status}
+                            </span>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+
                 <div className="space-y-3 pt-4 border-t border-slate-800">
                   <h3 className="text-xs font-bold text-white uppercase">Produtos Publicados ({products.length})</h3>
-                  <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+                  <div className="space-y-2 max-h-40 overflow-y-auto pr-1">
                     {products.map((p) => (
                       <div key={p.id} className="flex items-center justify-between p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs">
                         <div>
@@ -503,7 +558,7 @@ export default function App() {
         )}
       </main>
 
-      {/* CHECKOUT MODAL - REDIRECIONA LIMPO PARA A PAGINA DO APP NA VERCEL */}
+      {/* CHECKOUT MODAL */}
       {selectedProduct && (
         <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 space-y-4 relative">

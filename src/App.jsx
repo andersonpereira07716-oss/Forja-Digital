@@ -85,7 +85,6 @@ export default function App() {
   const [myOrders, setMyOrders] = useState([]);
   const [loadingOrders, setLoadingOrders] = useState(false);
 
-  // Autenticação Admin com Sessão Persistente Segura
   const [adminAuth, setAdminAuth] = useState({ email: '', password: '' });
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(() => {
     return localStorage.getItem('fd_admin_session') === 'true';
@@ -94,7 +93,6 @@ export default function App() {
   const [newProd, setNewProd] = useState({ title: '', category: 'SaaS / Sistemas', price: '', description: '', thumbnail: '', download_url: '' });
   const [dbOrders, setDbOrders] = useState([]);
 
-  // Sanitizador de entrada contra XSS e caracteres nocivos
   const sanitizeInput = (str) => {
     if (!str) return '';
     return str.toString().replace(/[<>]/g, '').trim();
@@ -331,17 +329,18 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 font-sans p-4 sm:p-8">
-      <header className="max-w-7xl mx-auto flex items-center justify-between pb-6 border-b border-slate-800">
+      {/* HEADER ORGANIZADO E RESPONSIVO */}
+      <header className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between pb-6 border-b border-slate-800 gap-4">
         <div className="flex items-center gap-3 cursor-pointer" onClick={() => setTab('catalog')}>
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 to-emerald-400 flex items-center justify-center text-slate-950 font-black text-lg">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-emerald-400 flex items-center justify-center text-slate-950 font-black text-xl shadow-lg shadow-cyan-500/20">
             F
           </div>
           <span className="font-black text-xl tracking-tight">FORJA<span className="text-cyan-400">DIGITAL</span></span>
         </div>
-        <div className="flex items-center gap-2">
-          <button onClick={() => setTab('catalog')} className={`px-3 py-1.5 rounded-xl text-xs font-bold transition ${tab === 'catalog' ? 'bg-cyan-500 text-slate-950' : 'text-slate-400 hover:text-white'}`}>Catálogo</button>
-          <button onClick={() => setTab('purchases')} className={`px-3 py-1.5 rounded-xl text-xs font-bold transition ${tab === 'purchases' ? 'bg-cyan-500 text-slate-950' : 'text-slate-400 hover:text-white'}`}>Meus Pedidos</button>
-          <button onClick={() => setTab('admin')} className={`px-3 py-1.5 rounded-xl text-xs font-bold transition ${tab === 'admin' ? 'bg-emerald-500 text-slate-950' : 'text-slate-400 hover:text-white'}`}>Admin</button>
+        <div className="flex items-center gap-2 bg-slate-900/80 p-1.5 rounded-2xl border border-slate-800">
+          <button onClick={() => setTab('catalog')} className={`px-4 py-2 rounded-xl text-xs font-bold transition ${tab === 'catalog' ? 'bg-cyan-500 text-slate-950 shadow-md' : 'text-slate-400 hover:text-white'}`}>Catálogo</button>
+          <button onClick={() => setTab('purchases')} className={`px-4 py-2 rounded-xl text-xs font-bold transition ${tab === 'purchases' ? 'bg-cyan-500 text-slate-950 shadow-md' : 'text-slate-400 hover:text-white'}`}>Meus Pedidos</button>
+          <button onClick={() => setTab('admin')} className={`px-4 py-2 rounded-xl text-xs font-bold transition ${tab === 'admin' ? 'bg-emerald-500 text-slate-950 shadow-md' : 'text-slate-400 hover:text-white'}`}>Admin</button>
         </div>
       </header>
 
@@ -357,25 +356,29 @@ export default function App() {
       <main className="max-w-7xl mx-auto py-10 space-y-10">
         {tab === 'catalog' && (
           <>
-            <div className="text-center space-y-3">
-              <h1 className="text-3xl sm:text-5xl font-black">Templates & Códigos Prontos</h1>
-              <p className="text-sm text-slate-400">Software pronto, landing pages e apps integrados ao Supabase. Baixe e acesse instantaneamente após o PIX.</p>
+            {/* TÍTULO E SUBTÍTULO ORGANIZADOS */}
+            <div className="text-center space-y-3 max-w-2xl mx-auto px-4">
+              <h1 className="text-3xl sm:text-5xl font-black tracking-tight leading-tight">Templates & Códigos Prontos</h1>
+              <p className="text-xs sm:text-sm text-slate-400">Software pronto, landing pages e apps integrados ao Supabase. Baixe e acesse instantaneamente após o PIX.</p>
             </div>
 
-            <div className="space-y-4 max-w-3xl mx-auto">
-              <input 
-                type="text" 
-                placeholder="🔍 Pesquisar por nome ou tecnologia..." 
-                value={searchTerm} 
-                onChange={e => setSearchTerm(e.target.value)} 
-                className="w-full p-3.5 bg-slate-900 border border-slate-800 rounded-2xl text-xs text-white focus:outline-none focus:border-cyan-500 transition"
-              />
-              <div className="flex flex-wrap gap-2 justify-center">
+            {/* BARRA DE PESQUISA E BOTÕES DE CATEGORIA COM SCROLL HORIZONTAL FLUIDO */}
+            <div className="space-y-4 max-w-3xl mx-auto px-2">
+              <div className="relative">
+                <input 
+                  type="text" 
+                  placeholder="🔍 Pesquisar por nome ou tecnologia..." 
+                  value={searchTerm} 
+                  onChange={e => setSearchTerm(e.target.value)} 
+                  className="w-full p-4 bg-slate-900 border border-slate-800 rounded-2xl text-xs text-white focus:outline-none focus:border-cyan-500 transition shadow-inner"
+                />
+              </div>
+              <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none justify-start sm:justify-center">
                 {['Todos', 'SaaS / Sistemas', 'Apps Mobile', 'Jogos Indie', 'Recorrência / VIP'].map((cat) => (
                   <button 
                     key={cat} 
                     onClick={() => setSelectedCategory(cat)} 
-                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition ${selectedCategory === cat ? 'bg-cyan-500 text-slate-950' : 'bg-slate-900 border border-slate-800 text-slate-400 hover:text-white'}`}
+                    className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition flex-shrink-0 ${selectedCategory === cat ? 'bg-cyan-500 text-slate-950 shadow-lg shadow-cyan-500/20' : 'bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:border-slate-700'}`}
                   >
                     {cat}
                   </button>
@@ -389,9 +392,9 @@ export default function App() {
                   <div className="space-y-3">
                     <div className="relative">
                       <img src={p.thumbnail} alt={p.title} className="h-44 w-full object-cover rounded-xl" />
-                      {p.badge && <span className="absolute top-3 left-3 px-2 py-0.5 bg-cyan-500 text-slate-950 text-[10px] font-black uppercase rounded">{p.badge}</span>}
+                      {p.badge && <span className="absolute top-3 left-3 px-2 py-0.5 bg-cyan-500 text-slate-950 text-[10px] font-black uppercase rounded shadow">{p.badge}</span>}
                     </div>
-                    <span className="text-[10px] font-bold text-cyan-400 uppercase">{p.category}</span>
+                    <span className="text-[10px] font-bold text-cyan-400 uppercase tracking-wider">{p.category}</span>
                     <h3 className="text-base font-bold">{p.title}</h3>
                     <p className="text-xs text-slate-400">{p.description}</p>
                   </div>
@@ -402,7 +405,7 @@ export default function App() {
                     </div>
                     <button 
                       onClick={() => { setSelectedProduct(p); setStep(1); }} 
-                      className="px-4 py-2 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black text-xs rounded-xl transition"
+                      className="px-4 py-2 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black text-xs rounded-xl transition shadow"
                     >
                       COMPRAR
                     </button>
@@ -429,11 +432,11 @@ export default function App() {
         )}
 
         {tab === 'purchases' && (
-          <div className="max-w-md mx-auto space-y-6 bg-slate-900 border border-slate-800 p-6 rounded-3xl">
+          <div className="max-w-md mx-auto space-y-6 bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-xl">
             <h2 className="text-lg font-black text-center">Consultar Meus Pedidos</h2>
             <form onSubmit={handleSearchOrders} className="space-y-3">
-              <input type="email" placeholder="Digite seu e-mail de compra..." required value={searchEmail} onChange={e => setSearchEmail(e.target.value)} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white" />
-              <button type="submit" className="w-full py-3 bg-cyan-500 text-slate-950 font-black text-xs uppercase rounded-xl">
+              <input type="email" placeholder="Digite seu e-mail de compra..." required value={searchEmail} onChange={e => setSearchEmail(e.target.value)} className="w-full p-3.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white" />
+              <button type="submit" className="w-full py-3.5 bg-cyan-500 text-slate-950 font-black text-xs uppercase rounded-xl shadow">
                 {loadingOrders ? 'A pesquisar...' : 'Buscar Licenças'}
               </button>
             </form>
@@ -444,7 +447,7 @@ export default function App() {
                   <div key={idx} className="p-4 bg-slate-950 border border-slate-800 rounded-xl space-y-2 text-xs">
                     <p className="font-bold text-white">{ord.product_title}</p>
                     <p className="font-mono text-cyan-400 text-[10px]">Chave: {ord.license_key}</p>
-                    <a href={ord.download_url} target="_blank" rel="noopener noreferrer" className="block w-full py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black uppercase rounded-xl text-center transition">
+                    <a href={ord.download_url} target="_blank" rel="noopener noreferrer" className="block w-full py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black uppercase rounded-xl text-center transition shadow">
                       🚀 ACESSAR APLICATIVO / INSTALAR PWA
                     </a>
                   </div>
@@ -454,9 +457,8 @@ export default function App() {
           </div>
         )}
 
-        {/* PAINEL ADMIN SEGURADO + TABELA DE VENDAS COMPLETA */}
         {tab === 'admin' && (
-          <div className="max-w-3xl mx-auto bg-slate-900 border border-slate-800 p-6 rounded-3xl space-y-6">
+          <div className="max-w-3xl mx-auto bg-slate-900 border border-slate-800 p-6 rounded-3xl space-y-6 shadow-xl">
             <h2 className="text-lg font-black text-center">Painel Administrativo Segurado</h2>
             
             {!isAdminLoggedIn ? (
@@ -500,7 +502,6 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* HISTÓRICO DE VENDAS REAL EM TEMPO REAL */}
                 <div className="space-y-3 pt-4 border-t border-slate-800">
                   <h3 className="text-xs font-bold text-white uppercase">Histórico de Transações ({dbOrders.length})</h3>
                   <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
@@ -561,8 +562,8 @@ export default function App() {
       {/* CHECKOUT MODAL */}
       {selectedProduct && (
         <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 space-y-4 relative">
-            <button onClick={() => setSelectedProduct(null)} className="absolute top-4 right-4 text-slate-400">✕</button>
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 space-y-4 relative shadow-2xl">
+            <button onClick={() => setSelectedProduct(null)} className="absolute top-4 right-4 text-slate-400 hover:text-white">✕</button>
             <h3 className="text-base font-bold">{selectedProduct.title}</h3>
 
             {step === 1 && (
@@ -571,7 +572,7 @@ export default function App() {
                 <input type="email" placeholder="Seu E-mail para receber a licença" required value={form.email} onChange={e => setForm({...form, email: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white" />
                 <input type="text" placeholder="CPF" required value={form.cpf} onChange={e => setForm({...form, cpf: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white font-mono" />
                 <input type="text" placeholder="Código de Indicação / Afiliado (Opcional)" value={form.refCode} onChange={e => setForm({...form, refCode: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white font-mono" />
-                <button type="submit" disabled={loadingPix} className="w-full py-3 bg-cyan-500 text-slate-950 font-black text-xs uppercase rounded-xl">
+                <button type="submit" disabled={loadingPix} className="w-full py-3.5 bg-cyan-500 text-slate-950 font-black text-xs uppercase rounded-xl shadow">
                   {loadingPix ? 'A Gerar PIX e Registar...' : 'Gerar PIX Mercado Pago'}
                 </button>
               </form>
@@ -589,7 +590,7 @@ export default function App() {
                 <p className="text-xs text-slate-400">Valor: R$ {Number(selectedProduct.price).toFixed(2)}</p>
                 <button 
                   onClick={handleApprovePayment} 
-                  className="w-full py-3 bg-emerald-500 text-slate-950 font-black text-xs uppercase rounded-xl"
+                  className="w-full py-3.5 bg-emerald-500 text-slate-950 font-black text-xs uppercase rounded-xl shadow"
                 >
                   Simular Pagamento Aprovado
                 </button>
@@ -611,7 +612,7 @@ export default function App() {
                     href={getCleanProductUrl(selectedProduct)} 
                     target="_blank" 
                     rel="noopener noreferrer" 
-                    className="block w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs uppercase rounded-xl text-center shadow-lg transition"
+                    className="block w-full py-3.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs uppercase rounded-xl text-center shadow-lg transition"
                   >
                     🚀 ACESSAR APLICATIVO / INSTALAR PWA
                   </a>

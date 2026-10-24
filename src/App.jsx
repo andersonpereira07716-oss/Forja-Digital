@@ -328,49 +328,60 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans p-4 sm:p-8">
-      {/* HEADER ORGANIZADO E RESPONSIVO */}
-      <header className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between pb-6 border-b border-slate-800 gap-4">
-        <div className="flex items-center gap-3 cursor-pointer" onClick={() => setTab('catalog')}>
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-emerald-400 flex items-center justify-center text-slate-950 font-black text-xl shadow-lg shadow-cyan-500/20">
+    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans p-4 sm:p-8 selection:bg-cyan-500 selection:text-slate-950">
+      
+      {/* HEADER ULTRA TECNOLÓGICO COM GLOW & GLASSMORPHISM */}
+      <header className="max-w-5xl mx-auto flex flex-col items-center justify-center pt-4 pb-8 border-b border-slate-900/80 gap-6">
+        <div className="flex items-center gap-3 cursor-pointer group" onClick={() => setTab('catalog')}>
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-cyan-500 via-teal-400 to-emerald-400 flex items-center justify-center text-slate-950 font-black text-2xl shadow-xl shadow-cyan-500/20 group-hover:scale-105 transition">
             F
           </div>
-          <span className="font-black text-xl tracking-tight">FORJA<span className="text-cyan-400">DIGITAL</span></span>
+          <span className="font-black text-2xl tracking-tighter text-white">
+            FORJA<span className="text-cyan-400 drop-shadow-[0_0_10px_rgba(6,182,212,0.5)]">DIGITAL</span>
+          </span>
         </div>
-        <div className="flex items-center gap-2 bg-slate-900/80 p-1.5 rounded-2xl border border-slate-800">
-          <button onClick={() => setTab('catalog')} className={`px-4 py-2 rounded-xl text-xs font-bold transition ${tab === 'catalog' ? 'bg-cyan-500 text-slate-950 shadow-md' : 'text-slate-400 hover:text-white'}`}>Catálogo</button>
-          <button onClick={() => setTab('purchases')} className={`px-4 py-2 rounded-xl text-xs font-bold transition ${tab === 'purchases' ? 'bg-cyan-500 text-slate-950 shadow-md' : 'text-slate-400 hover:text-white'}`}>Meus Pedidos</button>
-          <button onClick={() => setTab('admin')} className={`px-4 py-2 rounded-xl text-xs font-bold transition ${tab === 'admin' ? 'bg-emerald-500 text-slate-950 shadow-md' : 'text-slate-400 hover:text-white'}`}>Admin</button>
-        </div>
+
+        <nav className="flex items-center gap-1.5 bg-slate-900/90 backdrop-blur-xl p-1.5 rounded-2xl border border-slate-800/80 shadow-2xl">
+          <button onClick={() => setTab('catalog')} className={`px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition ${tab === 'catalog' ? 'bg-gradient-to-r from-cyan-500 to-teal-400 text-slate-950 shadow-lg shadow-cyan-500/25' : 'text-slate-400 hover:text-white'}`}>Catálogo</button>
+          <button onClick={() => setTab('purchases')} className={`px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition ${tab === 'purchases' ? 'bg-gradient-to-r from-cyan-500 to-teal-400 text-slate-950 shadow-lg shadow-cyan-500/25' : 'text-slate-400 hover:text-white'}`}>Meus Pedidos</button>
+          <button onClick={() => setTab('admin')} className={`px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition ${tab === 'admin' ? 'bg-gradient-to-r from-emerald-400 to-teal-500 text-slate-950 shadow-lg shadow-emerald-500/25' : 'text-slate-400 hover:text-white'}`}>Admin</button>
+        </nav>
       </header>
 
       <a 
         href="https://wa.me/5583999999999?text=Olá!%20Tenho%20interesse%20nos%20templates%20da%20Forja%20Digital." 
         target="_blank" 
         rel="noreferrer"
-        className="fixed bottom-5 right-5 z-50 p-4 bg-emerald-500 text-slate-950 rounded-full shadow-2xl font-bold hover:scale-105 transition flex items-center gap-2 text-xs"
+        className="fixed bottom-6 right-6 z-50 p-4 bg-emerald-500 text-slate-950 rounded-full shadow-[0_0_20px_rgba(16,185,129,0.4)] font-bold hover:scale-110 transition flex items-center gap-2 text-xs"
       >
         💬 WhatsApp
       </a>
 
-      <main className="max-w-7xl mx-auto py-10 space-y-10">
+      <main className="max-w-7xl mx-auto py-8 space-y-10">
         {tab === 'catalog' && (
           <>
-            {/* TÍTULO E SUBTÍTULO ORGANIZADOS */}
+            {/* HERO SECTION DE ALTO PADRÃO */}
             <div className="text-center space-y-3 max-w-2xl mx-auto px-4">
-              <h1 className="text-3xl sm:text-5xl font-black tracking-tight leading-tight">Templates & Códigos Prontos</h1>
-              <p className="text-xs sm:text-sm text-slate-400">Software pronto, landing pages e apps integrados ao Supabase. Baixe e acesse instantaneamente após o PIX.</p>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[10px] font-black uppercase tracking-widest mb-1">
+                ⚡ Ecossistema SaaS & PWA Enterprise
+              </div>
+              <h1 className="text-3xl sm:text-5xl font-black tracking-tight leading-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
+                Templates & Códigos Prontos
+              </h1>
+              <p className="text-xs sm:text-sm text-slate-400 font-medium">
+                Software pronto, landing pages e apps integrados ao Supabase. Baixe e acesse instantaneamente após o PIX.
+              </p>
             </div>
 
-            {/* BARRA DE PESQUISA E BOTÕES DE CATEGORIA COM SCROLL HORIZONTAL FLUIDO */}
+            {/* BARRA DE PESQUISA & FILTROS MODERNIZADOS */}
             <div className="space-y-4 max-w-3xl mx-auto px-2">
-              <div className="relative">
+              <div className="relative group">
                 <input 
                   type="text" 
-                  placeholder="🔍 Pesquisar por nome ou tecnologia..." 
+                  placeholder="🔍 Pesquisar por nome ou tecnologia (ex: React, Supabase)..." 
                   value={searchTerm} 
                   onChange={e => setSearchTerm(e.target.value)} 
-                  className="w-full p-4 bg-slate-900 border border-slate-800 rounded-2xl text-xs text-white focus:outline-none focus:border-cyan-500 transition shadow-inner"
+                  className="w-full p-4 bg-slate-900/90 backdrop-blur border border-slate-800 rounded-2xl text-xs text-white focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition shadow-xl"
                 />
               </div>
               <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none justify-start sm:justify-center">
@@ -378,7 +389,7 @@ export default function App() {
                   <button 
                     key={cat} 
                     onClick={() => setSelectedCategory(cat)} 
-                    className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition flex-shrink-0 ${selectedCategory === cat ? 'bg-cyan-500 text-slate-950 shadow-lg shadow-cyan-500/20' : 'bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:border-slate-700'}`}
+                    className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition flex-shrink-0 ${selectedCategory === cat ? 'bg-cyan-500 text-slate-950 shadow-lg shadow-cyan-500/20 scale-105' : 'bg-slate-900/80 border border-slate-800 text-slate-400 hover:text-white hover:border-slate-700'}`}
                   >
                     {cat}
                   </button>
@@ -386,26 +397,27 @@ export default function App() {
               </div>
             </div>
 
+            {/* GRID DE PRODUTOS PREMIUM */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {filteredProducts.map((p, idx) => (
-                <div key={p.id || idx} className="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between space-y-4 hover:border-cyan-500/50 transition">
+                <div key={p.id || idx} className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-3xl p-5 flex flex-col justify-between space-y-4 hover:border-cyan-500/50 hover:shadow-[0_0_30px_rgba(6,182,212,0.15)] transition-all group">
                   <div className="space-y-3">
-                    <div className="relative">
-                      <img src={p.thumbnail} alt={p.title} className="h-44 w-full object-cover rounded-xl" />
-                      {p.badge && <span className="absolute top-3 left-3 px-2 py-0.5 bg-cyan-500 text-slate-950 text-[10px] font-black uppercase rounded shadow">{p.badge}</span>}
+                    <div className="relative overflow-hidden rounded-2xl">
+                      <img src={p.thumbnail} alt={p.title} className="h-48 w-full object-cover group-hover:scale-105 transition duration-500" />
+                      {p.badge && <span className="absolute top-3 left-3 px-2.5 py-1 bg-gradient-to-r from-cyan-500 to-teal-400 text-slate-950 text-[10px] font-black uppercase rounded-lg shadow-md">{p.badge}</span>}
                     </div>
-                    <span className="text-[10px] font-bold text-cyan-400 uppercase tracking-wider">{p.category}</span>
-                    <h3 className="text-base font-bold">{p.title}</h3>
-                    <p className="text-xs text-slate-400">{p.description}</p>
+                    <span className="text-[10px] font-black text-cyan-400 uppercase tracking-widest block">{p.category}</span>
+                    <h3 className="text-base font-bold text-white group-hover:text-cyan-300 transition">{p.title}</h3>
+                    <p className="text-xs text-slate-400 leading-relaxed">{p.description}</p>
                   </div>
-                  <div className="pt-4 border-t border-slate-800 flex items-center justify-between">
+                  <div className="pt-4 border-t border-slate-800/80 flex items-center justify-between">
                     <div>
-                      {p.original_price && <span className="text-[10px] text-slate-500 line-through block">R$ {Number(p.original_price).toFixed(2)}</span>}
+                      {p.original_price && <span className="text-[10px] text-slate-500 line-through block font-medium">R$ {Number(p.original_price).toFixed(2)}</span>}
                       <span className="text-lg font-black text-emerald-400">R$ {Number(p.price).toFixed(2)}</span>
                     </div>
                     <button 
                       onClick={() => { setSelectedProduct(p); setStep(1); }} 
-                      className="px-4 py-2 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black text-xs rounded-xl transition shadow"
+                      className="px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-teal-400 hover:from-cyan-400 hover:to-teal-300 text-slate-950 font-black text-xs rounded-xl transition shadow-lg shadow-cyan-500/20 active:scale-95"
                     >
                       COMPRAR
                     </button>
@@ -414,15 +426,16 @@ export default function App() {
               ))}
             </div>
 
-            <div className="pt-10 border-t border-slate-800 space-y-6">
-              <h2 className="text-xl font-black text-center">O que dizem os nossos clientes</h2>
+            {/* SEÇÃO DE PROVA SOCIAL */}
+            <div className="pt-12 border-t border-slate-900 space-y-6">
+              <h2 className="text-xl font-black text-center tracking-tight">O que dizem os nossos clientes</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {TESTIMONIALS.map((t, idx) => (
-                  <div key={idx} className="bg-slate-900/60 border border-slate-800 p-5 rounded-2xl space-y-3">
-                    <p className="text-xs text-slate-300 italic">"{t.comment}"</p>
+                  <div key={idx} className="bg-slate-900/40 backdrop-blur border border-slate-800/80 p-6 rounded-3xl space-y-3 shadow-xl">
+                    <p className="text-xs text-slate-300 italic leading-relaxed">"{t.comment}"</p>
                     <div>
-                      <p className="text-xs font-bold text-cyan-400">{t.name}</p>
-                      <p className="text-[10px] text-slate-500">{t.role}</p>
+                      <p className="text-xs font-black text-cyan-400">{t.name}</p>
+                      <p className="text-[10px] text-slate-500 font-medium">{t.role}</p>
                     </div>
                   </div>
                 ))}
@@ -432,11 +445,11 @@ export default function App() {
         )}
 
         {tab === 'purchases' && (
-          <div className="max-w-md mx-auto space-y-6 bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-xl">
-            <h2 className="text-lg font-black text-center">Consultar Meus Pedidos</h2>
-            <form onSubmit={handleSearchOrders} className="space-y-3">
-              <input type="email" placeholder="Digite seu e-mail de compra..." required value={searchEmail} onChange={e => setSearchEmail(e.target.value)} className="w-full p-3.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white" />
-              <button type="submit" className="w-full py-3.5 bg-cyan-500 text-slate-950 font-black text-xs uppercase rounded-xl shadow">
+          <div className="max-w-md mx-auto space-y-6 bg-slate-900/60 backdrop-blur-xl border border-slate-800 p-8 rounded-3xl shadow-2xl">
+            <h2 className="text-lg font-black text-center tracking-tight">Consultar Meus Pedidos</h2>
+            <form onSubmit={handleSearchOrders} className="space-y-4">
+              <input type="email" placeholder="Digite seu e-mail de compra..." required value={searchEmail} onChange={e => setSearchEmail(e.target.value)} className="w-full p-4 bg-slate-950 border border-slate-800 rounded-2xl text-xs text-white focus:outline-none focus:border-cyan-500" />
+              <button type="submit" className="w-full py-4 bg-gradient-to-r from-cyan-500 to-teal-400 text-slate-950 font-black text-xs uppercase rounded-2xl shadow-lg shadow-cyan-500/25">
                 {loadingOrders ? 'A pesquisar...' : 'Buscar Licenças'}
               </button>
             </form>
@@ -444,10 +457,10 @@ export default function App() {
             {myOrders.length > 0 && (
               <div className="space-y-3 pt-4 border-t border-slate-800">
                 {myOrders.map((ord, idx) => (
-                  <div key={idx} className="p-4 bg-slate-950 border border-slate-800 rounded-xl space-y-2 text-xs">
+                  <div key={idx} className="p-4 bg-slate-950 border border-slate-800 rounded-2xl space-y-2 text-xs shadow-inner">
                     <p className="font-bold text-white">{ord.product_title}</p>
                     <p className="font-mono text-cyan-400 text-[10px]">Chave: {ord.license_key}</p>
-                    <a href={ord.download_url} target="_blank" rel="noopener noreferrer" className="block w-full py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black uppercase rounded-xl text-center transition shadow">
+                    <a href={ord.download_url} target="_blank" rel="noopener noreferrer" className="block w-full py-3 bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-300 hover:to-teal-400 text-slate-950 font-black uppercase rounded-xl text-center transition shadow-md">
                       🚀 ACESSAR APLICATIVO / INSTALAR PWA
                     </a>
                   </div>
@@ -458,11 +471,11 @@ export default function App() {
         )}
 
         {tab === 'admin' && (
-          <div className="max-w-3xl mx-auto bg-slate-900 border border-slate-800 p-6 rounded-3xl space-y-6 shadow-xl">
-            <h2 className="text-lg font-black text-center">Painel Administrativo Segurado</h2>
+          <div className="max-w-3xl mx-auto bg-slate-900/60 backdrop-blur-xl border border-slate-800 p-8 rounded-3xl space-y-6 shadow-2xl">
+            <h2 className="text-lg font-black text-center tracking-tight">Painel Administrativo Segurado</h2>
             
             {!isAdminLoggedIn ? (
-              <form onSubmit={handleAdminLogin} className="space-y-3 max-w-sm mx-auto">
+              <form onSubmit={handleAdminLogin} className="space-y-4 max-w-sm mx-auto">
                 <p className="text-xs text-slate-400 text-center">Entre com suas credenciais de e-mail e senha:</p>
                 <input 
                   type="email" 
@@ -470,7 +483,7 @@ export default function App() {
                   required 
                   value={adminAuth.email} 
                   onChange={e => setAdminAuth({ ...adminAuth, email: e.target.value })} 
-                  className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white" 
+                  className="w-full p-4 bg-slate-950 border border-slate-800 rounded-2xl text-xs text-white focus:outline-none focus:border-emerald-500" 
                 />
                 <input 
                   type="password" 
@@ -478,46 +491,46 @@ export default function App() {
                   required 
                   value={adminAuth.password} 
                   onChange={e => setAdminAuth({ ...adminAuth, password: e.target.value })} 
-                  className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white" 
+                  className="w-full p-4 bg-slate-950 border border-slate-800 rounded-2xl text-xs text-white focus:outline-none focus:border-emerald-500" 
                 />
-                <button type="submit" className="w-full py-3 bg-emerald-500 text-slate-950 font-black text-xs uppercase rounded-xl">
+                <button type="submit" className="w-full py-4 bg-gradient-to-r from-emerald-400 to-teal-500 text-slate-950 font-black text-xs uppercase rounded-2xl shadow-lg shadow-emerald-500/25">
                   Entrar no Painel
                 </button>
               </form>
             ) : (
               <div className="space-y-6">
-                <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+                <div className="flex items-center justify-between pb-4 border-b border-slate-800">
                   <p className="text-xs text-emerald-400 font-bold">● Sessão Ativa: admin@forjadigital.com</p>
                   <button onClick={handleAdminLogout} className="text-[10px] text-red-400 font-bold hover:underline">Sair / Logout</button>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-1">
-                    <p className="text-[10px] text-slate-400 uppercase font-bold">Faturamento Total</p>
-                    <p className="text-lg font-black text-emerald-400">R$ {totalRevenue.toFixed(2)}</p>
+                  <div className="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-1 shadow-inner">
+                    <p className="text-[10px] text-slate-400 uppercase font-black">Faturamento Total</p>
+                    <p className="text-xl font-black text-emerald-400">R$ {totalRevenue.toFixed(2)}</p>
                   </div>
-                  <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-1">
-                    <p className="text-[10px] text-slate-400 uppercase font-bold">Vendas Aprovadas</p>
-                    <p className="text-lg font-black text-cyan-400">{totalApprovedOrders} pedidos</p>
+                  <div className="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-1 shadow-inner">
+                    <p className="text-[10px] text-slate-400 uppercase font-black">Vendas Aprovadas</p>
+                    <p className="text-xl font-black text-cyan-400">{totalApprovedOrders} pedidos</p>
                   </div>
                 </div>
 
                 <div className="space-y-3 pt-4 border-t border-slate-800">
-                  <h3 className="text-xs font-bold text-white uppercase">Histórico de Transações ({dbOrders.length})</h3>
+                  <h3 className="text-xs font-black text-white uppercase tracking-wider">Histórico de Transações ({dbOrders.length})</h3>
                   <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
                     {dbOrders.length === 0 ? (
                       <p className="text-xs text-slate-500 italic">Nenhum pedido registrado ainda no Supabase.</p>
                     ) : (
                       dbOrders.map((ord, idx) => (
-                        <div key={ord.id || idx} className="p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs flex items-center justify-between">
-                          <div className="space-y-0.5">
+                        <div key={ord.id || idx} className="p-4 bg-slate-950 border border-slate-800 rounded-2xl text-xs flex items-center justify-between">
+                          <div className="space-y-1">
                             <p className="font-bold text-white">{ord.product_title}</p>
                             <p className="text-[10px] text-slate-400">{ord.customer_name} ({ord.customer_email})</p>
                             <p className="text-[9px] font-mono text-slate-500">Afiliado: {ord.ref_code || 'DIRETO'}</p>
                           </div>
                           <div className="text-right">
                             <span className="text-xs font-black text-emerald-400">R$ {Number(ord.amount).toFixed(2)}</span>
-                            <span className={`block text-[9px] uppercase font-bold ${ord.status === 'approved' ? 'text-emerald-400' : 'text-amber-400'}`}>
+                            <span className={`block text-[9px] uppercase font-black ${ord.status === 'approved' ? 'text-emerald-400' : 'text-amber-400'}`}>
                               {ord.status}
                             </span>
                           </div>
@@ -528,15 +541,15 @@ export default function App() {
                 </div>
 
                 <div className="space-y-3 pt-4 border-t border-slate-800">
-                  <h3 className="text-xs font-bold text-white uppercase">Produtos Publicados ({products.length})</h3>
+                  <h3 className="text-xs font-black text-white uppercase tracking-wider">Produtos Publicados ({products.length})</h3>
                   <div className="space-y-2 max-h-40 overflow-y-auto pr-1">
                     {products.map((p) => (
-                      <div key={p.id} className="flex items-center justify-between p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs">
+                      <div key={p.id} className="flex items-center justify-between p-3.5 bg-slate-950 border border-slate-800 rounded-2xl text-xs">
                         <div>
                           <p className="font-bold text-white">{p.title}</p>
-                          <p className="text-[10px] text-emerald-400 font-bold">R$ {Number(p.price).toFixed(2)}</p>
+                          <p className="text-[10px] text-emerald-400 font-black">R$ {Number(p.price).toFixed(2)}</p>
                         </div>
-                        <button onClick={() => handleDeleteProduct(p.id)} className="px-2.5 py-1 bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white rounded-lg text-[10px] font-bold transition">
+                        <button onClick={() => handleDeleteProduct(p.id)} className="px-3 py-1.5 bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white rounded-xl text-[10px] font-black transition">
                           Remover
                         </button>
                       </div>
@@ -545,13 +558,13 @@ export default function App() {
                 </div>
 
                 <form onSubmit={handleAddProduct} className="space-y-3 pt-4 border-t border-slate-800">
-                  <h3 className="text-xs font-bold text-white uppercase">Adicionar Novo Produto</h3>
-                  <input type="text" placeholder="Título do Produto" required value={newProd.title} onChange={e => setNewProd({...newProd, title: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white" />
-                  <input type="number" placeholder="Preço (R$)" required value={newProd.price} onChange={e => setNewProd({...newProd, price: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white" />
-                  <textarea placeholder="Descrição curta" required value={newProd.description} onChange={e => setNewProd({...newProd, description: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white h-20" />
-                  <input type="url" placeholder="URL da Imagem (Thumbnail)" value={newProd.thumbnail} onChange={e => setNewProd({...newProd, thumbnail: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white" />
-                  <input type="url" placeholder="Link do App na Vercel (ex: https://zap-vitrine-sigma.vercel.app)" required value={newProd.download_url} onChange={e => setNewProd({...newProd, download_url: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white" />
-                  <button type="submit" className="w-full py-3 bg-cyan-500 text-slate-950 font-black text-xs uppercase rounded-xl">Publicar Produto no Supabase</button>
+                  <h3 className="text-xs font-black text-white uppercase tracking-wider">Adicionar Novo Produto</h3>
+                  <input type="text" placeholder="Título do Produto" required value={newProd.title} onChange={e => setNewProd({...newProd, title: e.target.value})} className="w-full p-3.5 bg-slate-950 border border-slate-800 rounded-2xl text-xs text-white" />
+                  <input type="number" placeholder="Preço (R$)" required value={newProd.price} onChange={e => setNewProd({...newProd, price: e.target.value})} className="w-full p-3.5 bg-slate-950 border border-slate-800 rounded-2xl text-xs text-white" />
+                  <textarea placeholder="Descrição curta" required value={newProd.description} onChange={e => setNewProd({...newProd, description: e.target.value})} className="w-full p-3.5 bg-slate-950 border border-slate-800 rounded-2xl text-xs text-white h-20" />
+                  <input type="url" placeholder="URL da Imagem (Thumbnail)" value={newProd.thumbnail} onChange={e => setNewProd({...newProd, thumbnail: e.target.value})} className="w-full p-3.5 bg-slate-950 border border-slate-800 rounded-2xl text-xs text-white" />
+                  <input type="url" placeholder="Link do App na Vercel (ex: https://zap-vitrine-sigma.vercel.app)" required value={newProd.download_url} onChange={e => setNewProd({...newProd, download_url: e.target.value})} className="w-full p-3.5 bg-slate-950 border border-slate-800 rounded-2xl text-xs text-white" />
+                  <button type="submit" className="w-full py-3.5 bg-gradient-to-r from-cyan-500 to-teal-400 text-slate-950 font-black text-xs uppercase rounded-2xl shadow-md">Publicar Produto no Supabase</button>
                 </form>
               </div>
             )}
@@ -559,20 +572,20 @@ export default function App() {
         )}
       </main>
 
-      {/* CHECKOUT MODAL */}
+      {/* CHECKOUT MODAL ULTRA MODERNO */}
       {selectedProduct && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4">
           <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 space-y-4 relative shadow-2xl">
             <button onClick={() => setSelectedProduct(null)} className="absolute top-4 right-4 text-slate-400 hover:text-white">✕</button>
-            <h3 className="text-base font-bold">{selectedProduct.title}</h3>
+            <h3 className="text-base font-bold text-white">{selectedProduct.title}</h3>
 
             {step === 1 && (
               <form onSubmit={handleGeneratePix} className="space-y-3">
-                <input type="text" placeholder="Seu Nome Completo" required value={form.name} onChange={e => setForm({...form, name: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white" />
-                <input type="email" placeholder="Seu E-mail para receber a licença" required value={form.email} onChange={e => setForm({...form, email: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white" />
-                <input type="text" placeholder="CPF" required value={form.cpf} onChange={e => setForm({...form, cpf: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white font-mono" />
-                <input type="text" placeholder="Código de Indicação / Afiliado (Opcional)" value={form.refCode} onChange={e => setForm({...form, refCode: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white font-mono" />
-                <button type="submit" disabled={loadingPix} className="w-full py-3.5 bg-cyan-500 text-slate-950 font-black text-xs uppercase rounded-xl shadow">
+                <input type="text" placeholder="Seu Nome Completo" required value={form.name} onChange={e => setForm({...form, name: e.target.value})} className="w-full p-3.5 bg-slate-950 border border-slate-800 rounded-2xl text-xs text-white" />
+                <input type="email" placeholder="Seu E-mail para receber a licença" required value={form.email} onChange={e => setForm({...form, email: e.target.value})} className="w-full p-3.5 bg-slate-950 border border-slate-800 rounded-2xl text-xs text-white" />
+                <input type="text" placeholder="CPF" required value={form.cpf} onChange={e => setForm({...form, cpf: e.target.value})} className="w-full p-3.5 bg-slate-950 border border-slate-800 rounded-2xl text-xs text-white font-mono" />
+                <input type="text" placeholder="Código de Indicação / Afiliado (Opcional)" value={form.refCode} onChange={e => setForm({...form, refCode: e.target.value})} className="w-full p-3.5 bg-slate-950 border border-slate-800 rounded-2xl text-xs text-white font-mono" />
+                <button type="submit" disabled={loadingPix} className="w-full py-4 bg-gradient-to-r from-cyan-500 to-teal-400 text-slate-950 font-black text-xs uppercase rounded-2xl shadow-lg shadow-cyan-500/25">
                   {loadingPix ? 'A Gerar PIX e Registar...' : 'Gerar PIX Mercado Pago'}
                 </button>
               </form>
@@ -581,16 +594,16 @@ export default function App() {
             {step === 2 && (
               <div className="text-center space-y-3 py-2">
                 {pixData?.qrCodeBase64 && (
-                  <img src={`data:image/png;base64,${pixData.qrCodeBase64}`} alt="QR Code PIX" className="w-40 h-40 mx-auto rounded-xl border border-slate-800" />
+                  <img src={`data:image/png;base64,${pixData.qrCodeBase64}`} alt="QR Code PIX" className="w-40 h-40 mx-auto rounded-2xl border border-slate-800 shadow-lg" />
                 )}
-                <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 text-left space-y-1">
-                  <p className="text-[10px] text-slate-400">Chave PIX Copia e Cola:</p>
+                <div className="p-3 bg-slate-950 rounded-2xl border border-slate-800 text-left space-y-1">
+                  <p className="text-[10px] text-slate-400 font-bold">Chave PIX Copia e Cola:</p>
                   <p className="text-[10px] font-mono text-cyan-400 break-all">{pixData?.copyPasteCode}</p>
                 </div>
                 <p className="text-xs text-slate-400">Valor: R$ {Number(selectedProduct.price).toFixed(2)}</p>
                 <button 
                   onClick={handleApprovePayment} 
-                  className="w-full py-3.5 bg-emerald-500 text-slate-950 font-black text-xs uppercase rounded-xl shadow"
+                  className="w-full py-4 bg-gradient-to-r from-emerald-400 to-teal-500 text-slate-950 font-black text-xs uppercase rounded-2xl shadow-lg shadow-emerald-500/25"
                 >
                   Simular Pagamento Aprovado
                 </button>
@@ -599,20 +612,20 @@ export default function App() {
 
             {step === 3 && (
               <div className="text-center space-y-4 py-3">
-                <div className="w-12 h-12 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto text-2xl font-black">
+                <div className="w-14 h-14 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto text-2xl font-black shadow-inner">
                   ✓
                 </div>
                 <div>
                   <h4 className="text-base font-bold text-white">Pagamento Confirmado!</h4>
                   <p className="text-xs text-slate-400 mt-1">Seu acesso ao aplicativo foi liberado com sucesso.</p>
                 </div>
-                <div className="p-4 bg-slate-950 border border-slate-800 rounded-2xl text-left space-y-2">
-                  <p className="text-[10px] text-slate-500 uppercase font-bold">Link Válido do App na Vercel:</p>
+                <div className="p-4 bg-slate-950 border border-slate-800 rounded-2xl text-left space-y-2 shadow-inner">
+                  <p className="text-[10px] text-slate-500 uppercase font-black">Link Válido do App na Vercel:</p>
                   <a 
                     href={getCleanProductUrl(selectedProduct)} 
                     target="_blank" 
                     rel="noopener noreferrer" 
-                    className="block w-full py-3.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs uppercase rounded-xl text-center shadow-lg transition"
+                    className="block w-full py-3.5 bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-300 hover:to-teal-400 text-slate-950 font-black text-xs uppercase rounded-xl text-center shadow-lg transition"
                   >
                     🚀 ACESSAR APLICATIVO / INSTALAR PWA
                   </a>

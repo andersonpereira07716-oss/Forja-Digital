@@ -12,7 +12,7 @@ const INITIAL_PRODUCTS = [
     thumbnail: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80', 
     description: 'Sistema completo de catálogo para WhatsApp com checkout integrado e automação de IA.', 
     techs: ['React', 'Node.js', 'Supabase'],
-    download_url: 'https://github.com/anderson-ps1'
+    download_url: 'https://github.com/anderson-ps1?tab=repositories'
   },
   { 
     id: '2', 
@@ -24,7 +24,7 @@ const INITIAL_PRODUCTS = [
     thumbnail: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=800&q=80', 
     description: 'Kit completo de jogo arcade mobile responsivo construído em HTML5 Canvas + React.', 
     techs: ['React', 'HTML5 Canvas'],
-    download_url: 'https://github.com/anderson-ps1'
+    download_url: 'https://github.com/anderson-ps1?tab=repositories'
   },
   { 
     id: '3', 
@@ -36,7 +36,7 @@ const INITIAL_PRODUCTS = [
     thumbnail: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80', 
     description: 'Template PWA nativo para monitoramento em tempo real, gestão de alertas e dashboards.', 
     techs: ['React', 'PWA', 'Tailwind'],
-    download_url: 'https://github.com/anderson-ps1'
+    download_url: 'https://github.com/anderson-ps1?tab=repositories'
   },
   { 
     id: '4', 
@@ -48,7 +48,7 @@ const INITIAL_PRODUCTS = [
     thumbnail: 'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?auto=format&fit=crop&w=800&q=80', 
     description: 'App de mobilidade local com calculadora de tarifas personalizada e pagamento PIX direto.', 
     techs: ['React', 'Tailwind', 'Supabase'],
-    download_url: 'https://github.com/anderson-ps1'
+    download_url: 'https://github.com/anderson-ps1?tab=repositories'
   },
   { 
     id: '5', 
@@ -60,7 +60,7 @@ const INITIAL_PRODUCTS = [
     thumbnail: 'https://images.unsplash.com/photo-1553877522-43269d4ea984?auto=format&fit=crop&w=800&q=80', 
     description: 'Acesso vitalício ou anual a todos os códigos-fonte atuais e futuros lançamentos da Forja Digital.', 
     techs: ['All Access', 'VIP Support'],
-    download_url: 'https://github.com/anderson-ps1'
+    download_url: 'https://github.com/anderson-ps1?tab=repositories'
   }
 ];
 
@@ -78,16 +78,13 @@ export default function App() {
   const [pixData, setPixData] = useState(null);
   const [loadingPix, setLoadingPix] = useState(false);
 
-  // Filtros & Pesquisa
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Todos');
 
-  // Meus Pedidos
   const [searchEmail, setSearchEmail] = useState('');
   const [myOrders, setMyOrders] = useState([]);
   const [loadingOrders, setLoadingOrders] = useState(false);
 
-  // Autenticação Admin (E-mail & Senha)
   const [adminAuth, setAdminAuth] = useState({ email: '', password: '' });
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
   const [newProd, setNewProd] = useState({ title: '', category: 'SaaS / Sistemas', price: '', description: '', thumbnail: '', download_url: '' });
@@ -106,24 +103,21 @@ export default function App() {
     loadData();
   }, [isAdminLoggedIn]);
 
-  // Filtro de produtos
   const filteredProducts = products.filter(p => {
     const matchesCategory = selectedCategory === 'Todos' || p.category === selectedCategory;
     const matchesSearch = p.title.toLowerCase().includes(searchTerm.toLowerCase()) || p.description.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesCategory && matchesSearch;
   });
 
-  // Métricas do Dashboard Admin
   const totalRevenue = dbOrders.filter(o => o.status === 'approved').reduce((acc, curr) => acc + (Number(curr.amount) || 0), 0);
   const totalApprovedOrders = dbOrders.filter(o => o.status === 'approved').length;
 
-  // Handler do Login Administrativo por E-mail & Senha
   const handleAdminLogin = (e) => {
     e.preventDefault();
     if (adminAuth.email === 'admin@forjadigital.com' && adminAuth.password === 'admin123') {
       setIsAdminLoggedIn(true);
     } else {
-      alert('Credenciais incorretas! Verifique seu e-mail e senha.');
+      alert('Credenciais incorretas!');
     }
   };
 
@@ -170,7 +164,7 @@ export default function App() {
             amount: selectedProduct.price,
             status: 'pending',
             license_key: `FORJA-${Math.random().toString(36).substring(2, 8).toUpperCase()}-2026`,
-            download_url: selectedProduct.download_url || 'https://github.com/anderson-ps1',
+            download_url: selectedProduct.download_url || 'https://github.com/anderson-ps1?tab=repositories',
             ref_code: form.refCode || 'DIRETO'
           }
         ]);
@@ -196,7 +190,7 @@ export default function App() {
           email: form.email,
           name: form.name,
           productTitle: selectedProduct.title,
-          downloadUrl: selectedProduct.download_url || 'https://github.com/anderson-ps1'
+          downloadUrl: selectedProduct.download_url || 'https://github.com/anderson-ps1?tab=repositories'
         })
       });
     } catch (e) {
@@ -228,7 +222,7 @@ export default function App() {
               product_title: 'ZapVitrine AI & SaaS', 
               status: 'approved', 
               license_key: 'FORJA-PRO-884X-2026',
-              download_url: 'https://github.com/anderson-ps1'
+              download_url: 'https://github.com/anderson-ps1?tab=repositories'
             }
           ]);
         }
@@ -239,7 +233,7 @@ export default function App() {
             product_title: 'ZapVitrine AI & SaaS', 
             status: 'approved', 
             license_key: 'FORJA-PRO-884X-2026',
-            download_url: 'https://github.com/anderson-ps1'
+            download_url: 'https://github.com/anderson-ps1?tab=repositories'
           }
         ]);
       }
@@ -263,7 +257,7 @@ export default function App() {
       description: newProd.description,
       thumbnail: newProd.thumbnail || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80',
       techs: ['React', 'Node.js'],
-      download_url: newProd.download_url || 'https://github.com/anderson-ps1'
+      download_url: newProd.download_url || 'https://github.com/anderson-ps1?tab=repositories'
     };
 
     if (supabase) {
@@ -399,7 +393,7 @@ export default function App() {
                   <div key={idx} className="p-4 bg-slate-950 border border-slate-800 rounded-xl space-y-2 text-xs">
                     <p className="font-bold text-white">{ord.product_title}</p>
                     <p className="font-mono text-cyan-400 text-[10px]">Chave: {ord.license_key}</p>
-                    <a href={ord.download_url} target="_blank" rel="noreferrer" className="block w-full py-2 bg-emerald-500 text-slate-950 font-black uppercase rounded-lg text-center">Baixar Ficheiro (.ZIP)</a>
+                    <a href={ord.download_url} target="_blank" rel="noopener noreferrer" className="block w-full py-2 bg-emerald-500 text-slate-950 font-black uppercase rounded-lg text-center">Acessar Ficheiro / Repositório</a>
                   </div>
                 ))}
               </div>
@@ -407,7 +401,6 @@ export default function App() {
           </div>
         )}
 
-        {/* PAINEL ADMIN COM LOGIN POR E-MAIL & SENHA + GERENCIAMENTO COMPLETO */}
         {tab === 'admin' && (
           <div className="max-w-2xl mx-auto bg-slate-900 border border-slate-800 p-6 rounded-3xl space-y-6">
             <h2 className="text-lg font-black text-center">Painel Administrativo Segurado</h2>
@@ -443,7 +436,6 @@ export default function App() {
                   <button onClick={() => setIsAdminLoggedIn(false)} className="text-[10px] text-red-400 font-bold hover:underline">Sair / Logout</button>
                 </div>
 
-                {/* KPI Cards */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-1">
                     <p className="text-[10px] text-slate-400 uppercase font-bold">Faturamento Total</p>
@@ -455,7 +447,6 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Gestão de Produtos */}
                 <div className="space-y-3 pt-4 border-t border-slate-800">
                   <h3 className="text-xs font-bold text-white uppercase">Produtos Publicados ({products.length})</h3>
                   <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
@@ -473,7 +464,6 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Formulário para Adicionar Produtos */}
                 <form onSubmit={handleAddProduct} className="space-y-3 pt-4 border-t border-slate-800">
                   <h3 className="text-xs font-bold text-white uppercase">Adicionar Novo Produto</h3>
                   <input type="text" placeholder="Título do Produto" required value={newProd.title} onChange={e => setNewProd({...newProd, title: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white" />
@@ -489,7 +479,6 @@ export default function App() {
         )}
       </main>
 
-      {/* CHECKOUT MODAL */}
       {selectedProduct && (
         <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 space-y-4 relative">

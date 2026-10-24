@@ -330,8 +330,8 @@ export default function App() {
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 font-sans p-4 sm:p-8 selection:bg-cyan-500 selection:text-slate-950">
       
-      {/* HEADER ULTRA TECNOLÓGICO COM GLOW & GLASSMORPHISM */}
-      <header className="max-w-5xl mx-auto flex flex-col items-center justify-center pt-4 pb-8 border-b border-slate-900/80 gap-6">
+      {/* HEADER ULTRA TECNOLÓGICO */}
+      <header className="max-w-5xl mx-auto flex flex-col items-center justify-center pt-4 pb-6 border-b border-slate-900/80 gap-5">
         <div className="flex items-center gap-3 cursor-pointer group" onClick={() => setTab('catalog')}>
           <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-cyan-500 via-teal-400 to-emerald-400 flex items-center justify-center text-slate-950 font-black text-2xl shadow-xl shadow-cyan-500/20 group-hover:scale-105 transition">
             F
@@ -360,9 +360,9 @@ export default function App() {
       <main className="max-w-7xl mx-auto py-8 space-y-10">
         {tab === 'catalog' && (
           <>
-            {/* HERO SECTION DE ALTO PADRÃO */}
+            {/* HERO SECTION */}
             <div className="text-center space-y-3 max-w-2xl mx-auto px-4">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[10px] font-black uppercase tracking-widest mb-1">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[10px] font-black uppercase tracking-widest mb-1 shadow-inner">
                 ⚡ Ecossistema SaaS & PWA Enterprise
               </div>
               <h1 className="text-3xl sm:text-5xl font-black tracking-tight leading-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
@@ -373,7 +373,7 @@ export default function App() {
               </p>
             </div>
 
-            {/* BARRA DE PESQUISA & FILTROS MODERNIZADOS */}
+            {/* BARRA DE PESQUISA & FILTROS COM ESPAÇAMENTO OTIMIZADO */}
             <div className="space-y-4 max-w-3xl mx-auto px-2">
               <div className="relative group">
                 <input 
@@ -384,12 +384,12 @@ export default function App() {
                   className="w-full p-4 bg-slate-900/90 backdrop-blur border border-slate-800 rounded-2xl text-xs text-white focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition shadow-xl"
                 />
               </div>
-              <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none justify-start sm:justify-center">
+              <div className="flex flex-wrap gap-2 justify-center pt-1 pb-1">
                 {['Todos', 'SaaS / Sistemas', 'Apps Mobile', 'Jogos Indie', 'Recorrência / VIP'].map((cat) => (
                   <button 
                     key={cat} 
                     onClick={() => setSelectedCategory(cat)} 
-                    className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition flex-shrink-0 ${selectedCategory === cat ? 'bg-cyan-500 text-slate-950 shadow-lg shadow-cyan-500/20 scale-105' : 'bg-slate-900/80 border border-slate-800 text-slate-400 hover:text-white hover:border-slate-700'}`}
+                    className={`px-4 py-2.5 rounded-xl text-xs font-bold transition ${selectedCategory === cat ? 'bg-cyan-500 text-slate-950 shadow-lg shadow-cyan-500/20 scale-105' : 'bg-slate-900/80 border border-slate-800 text-slate-400 hover:text-white hover:border-slate-700'}`}
                   >
                     {cat}
                   </button>

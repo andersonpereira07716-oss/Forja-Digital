@@ -23,7 +23,7 @@ const TESTIMONIALS = [
 
 const FAQS = [
   { q: 'Como recebo o acesso após o pagamento?', r: 'Assim que o pagamento via PIX é confirmado, o acesso à Vercel e o link de instalação do PWA são liberados instantaneamente na tela e enviados por e-mail.' },
-  * { q: 'Preciso saber programar para usar?', r: 'O sistema já vai pronto para uso. Para revender ou configurar para clientes, disponibilizamos documentação e código limpo em React.' },
+  { q: 'Preciso saber programar para usar?', r: 'O sistema já vai pronto para uso. Para revender ou configurar para clientes, disponibilizamos documentação e código limpo em React.' },
   { q: 'O pagamento via PIX é seguro?', r: 'Sim! Utilizamos a infraestrutura oficial de pagamentos do Mercado Pago com criptografia de ponta a ponta.' }
 ];
 
@@ -50,7 +50,7 @@ export default function App() {
   
   const [newProd, setNewProd] = useState({ title: '', category: 'SaaS / Sistemas', price: '', description: '', thumbnail: '', download_url: '' });
   const [dbOrders, setDbOrders] = useState([]);
-  const [legalModal, setLegalModal] = useState(null); // 'terms' ou 'privacy'
+  const [legalModal, setLegalModal] = useState(null);
 
   const sanitizeInput = (str) => {
     if (!str) return '';

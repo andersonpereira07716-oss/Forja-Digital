@@ -49,18 +49,6 @@ const INITIAL_PRODUCTS = [
     description: 'App de mobilidade local com calculadora de tarifas personalizada e pagamento PIX direto.', 
     techs: ['React', 'Tailwind', 'Supabase'],
     download_url: 'https://rotafixa.vercel.app'
-  },
-  { 
-    id: '5', 
-    title: 'Passaporte All-Access (Assinatura Anual)', 
-    category: 'Recorrência / VIP', 
-    price: 297.00, 
-    original_price: 697.00, 
-    badge: 'Melhor Valor', 
-    thumbnail: 'https://images.unsplash.com/photo-1553877522-43269d4ea984?auto=format&fit=crop&w=800&q=80', 
-    description: 'Acesso vitalício ou anual a todos os códigos-fonte atuais e futuros lançamentos da Forja Digital.', 
-    techs: ['All Access', 'VIP Support'],
-    download_url: 'https://zap-vitrine-sigma.vercel.app'
   }
 ];
 
@@ -373,7 +361,7 @@ export default function App() {
               </p>
             </div>
 
-            {/* BARRA DE PESQUISA & FILTROS COM ESPAÇAMENTO OTIMIZADO */}
+            {/* BARRA DE PESQUISA & FILTROS */}
             <div className="space-y-4 max-w-3xl mx-auto px-2">
               <div className="relative group">
                 <input 

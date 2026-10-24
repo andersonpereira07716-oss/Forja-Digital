@@ -57,7 +57,7 @@ export default function App() {
   const [isAdminAuth, setIsAdminAuth] = useState(false);
   const [newProd, setNewProd] = useState({ title: '', category: 'SaaS / Sistemas', price: '', description: '', thumbnail: '' });
 
-  // 1. GERAR PIX DINÂMICO REAL / SIMULADO
+  // 1. GERAR PIX REAL / SERVERLESS
   const handleGeneratePix = async (e) => {
     e.preventDefault();
     if (!form.name || !form.email || !form.cpf) return;
@@ -80,7 +80,7 @@ export default function App() {
       if (data.copyPasteCode) {
         setPixData(data);
       } else {
-        throw new Error('Fallback local');
+        throw new Error(data.error || 'Fallback local');
       }
     } catch (err) {
       setPixData({
@@ -108,7 +108,7 @@ export default function App() {
     ]);
   };
 
-  // 3. ADMIN - CRIAR NOVO PRODUTO
+  // 3. ADMIN - ADICIONAR NOVO PRODUTO
   const handleAddProduct = (e) => {
     e.preventDefault();
     if (!newProd.title || !newProd.price) return;
@@ -256,6 +256,9 @@ export default function App() {
               </form>
             ) : (
               <div className="text-center space-y-3 py-2">
+                {pixData?.qrCodeBase64 && (
+                  <img src={`data:image/png;base64,${pixData.qrCodeBase64}`} alt="QR Code PIX" className="w-40 h-40 mx-auto rounded-xl border border-slate-800" />
+                )}
                 <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 text-left space-y-1">
                   <p className="text-[10px] text-slate-400">Chave PIX Copia e Cola:</p>
                   <p className="text-[10px] font-mono text-cyan-400 break-all">{pixData?.copyPasteCode}</p>
@@ -263,12 +266,12 @@ export default function App() {
                 <p className="text-xs text-slate-400">Valor: R$ {Number(selectedProduct.price).toFixed(2)}</p>
                 <button 
                   onClick={() => {
-                    alert(`✅ Pagamento aprovado! Notificação enviada para ${form.email}.`);
+                    alert(`✅ Pagamento verificado! Pedido liberado para ${form.email}.`);
                     setSelectedProduct(null);
                   }} 
                   className="w-full py-3 bg-emerald-500 text-slate-950 font-black text-xs uppercase rounded-xl"
                 >
-                  Simular Notificação / Liberação Automática
+                  Simular Pagamento Aprovado
                 </button>
               </div>
             )}

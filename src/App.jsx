@@ -77,6 +77,7 @@ export default function App() {
   const [form, setForm] = useState({ name: '', email: '', cpf: '', refCode: '' });
   const [pixData, setPixData] = useState(null);
   const [loadingPix, setLoadingPix] = useState(false);
+  const [countdown, setCountdown] = useState(3);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Todos');
@@ -95,7 +96,6 @@ export default function App() {
       if (supabase) {
         const { data: prodData } = await supabase.from('products').select('*');
         if (prodData && prodData.length > 0) {
-          // Mapeia garantindo que o ZapVitrine aponte estritamente para o zap-vitrine-sigma.vercel.app
           const updatedProd = prodData.map(p => {
             if (p.title.includes('ZapVitrine')) {
               return { ...p, download_url: 'https://zap-vitrine-sigma.vercel.app' };
@@ -111,6 +111,26 @@ export default function App() {
     }
     loadData();
   }, [isAdminLoggedIn]);
+
+  // Efeito de redirecionamento automático pós-pagamento
+  useEffect(() => {
+    let timer;
+    if (step === 3 && selectedProduct) {
+      setCountdown(3);
+      timer = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            const targetUrl = getProductTargetUrl(selectedProduct);
+            window.open(targetUrl, '_blank');
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(timer);
+  }, [step, selectedProduct]);
 
   const filteredProducts = products.filter(p => {
     const matchesCategory = selectedCategory === 'Todos' || p.category === selectedCategory;
@@ -498,7 +518,7 @@ export default function App() {
         )}
       </main>
 
-      {/* CHECKOUT MODAL - REDIRECIONA PARA O LINK DIRETO EXCLUSIVO DE CADA APLICATIVO */}
+      {/* CHECKOUT MODAL COM REDIRECIONAMENTO AUTOMÁTICO */}
       {selectedProduct && (
         <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 space-y-4 relative">
@@ -543,7 +563,7 @@ export default function App() {
                 </div>
                 <div>
                   <h4 className="text-base font-bold text-white">Pagamento Confirmado!</h4>
-                  <p className="text-xs text-slate-400 mt-1">Acesso liberado para: <strong className="text-white">{selectedProduct.title}</strong></p>
+                  <p className="text-xs text-slate-400 mt-1">Redirecionando em <span className="text-cyan-400 font-bold">{countdown}s</span> para a página do app na Vercel...</p>
                 </div>
                 <div className="p-4 bg-slate-950 border border-slate-800 rounded-2xl text-left space-y-2">
                   <p className="text-[10px] text-slate-500 uppercase font-bold">Link Direto na Vercel:</p>
@@ -553,7 +573,7 @@ export default function App() {
                     rel="noopener noreferrer" 
                     className="block w-full py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black text-xs uppercase rounded-xl text-center shadow-lg transition"
                   >
-                    🚀 ACESSAR / INSTALAR AGORA
+                    🚀 ACESSAR AGORA ({countdown}s)
                   </a>
                 </div>
                 <button 

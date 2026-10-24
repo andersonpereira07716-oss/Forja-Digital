@@ -12,7 +12,7 @@ const INITIAL_PRODUCTS = [
     thumbnail: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80', 
     description: 'Sistema completo de catálogo para WhatsApp com checkout integrado e automação de IA.', 
     techs: ['React', 'Node.js', 'Supabase'],
-    download_url: 'https://github.com/anderson-ps1?tab=repositories'
+    download_url: 'https://catalogo-apps.vercel.app'
   },
   { 
     id: '2', 
@@ -24,7 +24,7 @@ const INITIAL_PRODUCTS = [
     thumbnail: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=800&q=80', 
     description: 'Kit completo de jogo arcade mobile responsivo construído em HTML5 Canvas + React.', 
     techs: ['React', 'HTML5 Canvas'],
-    download_url: 'https://github.com/anderson-ps1?tab=repositories'
+    download_url: 'https://catalogo-apps.vercel.app'
   },
   { 
     id: '3', 
@@ -36,7 +36,7 @@ const INITIAL_PRODUCTS = [
     thumbnail: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80', 
     description: 'Template PWA nativo para monitoramento em tempo real, gestão de alertas e dashboards.', 
     techs: ['React', 'PWA', 'Tailwind'],
-    download_url: 'https://github.com/anderson-ps1?tab=repositories'
+    download_url: 'https://catalogo-apps.vercel.app'
   },
   { 
     id: '4', 
@@ -48,7 +48,7 @@ const INITIAL_PRODUCTS = [
     thumbnail: 'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?auto=format&fit=crop&w=800&q=80', 
     description: 'App de mobilidade local com calculadora de tarifas personalizada e pagamento PIX direto.', 
     techs: ['React', 'Tailwind', 'Supabase'],
-    download_url: 'https://github.com/anderson-ps1?tab=repositories'
+    download_url: 'https://catalogo-apps.vercel.app'
   },
   { 
     id: '5', 
@@ -60,7 +60,7 @@ const INITIAL_PRODUCTS = [
     thumbnail: 'https://images.unsplash.com/photo-1553877522-43269d4ea984?auto=format&fit=crop&w=800&q=80', 
     description: 'Acesso vitalício ou anual a todos os códigos-fonte atuais e futuros lançamentos da Forja Digital.', 
     techs: ['All Access', 'VIP Support'],
-    download_url: 'https://github.com/anderson-ps1?tab=repositories'
+    download_url: 'https://catalogo-apps.vercel.app'
   }
 ];
 
@@ -73,7 +73,7 @@ export default function App() {
   const [tab, setTab] = useState('catalog');
   const [products, setProducts] = useState(INITIAL_PRODUCTS);
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(1); // Step 1: Form, Step 2: PIX, Step 3: Sucesso Instantâneo
   const [form, setForm] = useState({ name: '', email: '', cpf: '', refCode: '' });
   const [pixData, setPixData] = useState(null);
   const [loadingPix, setLoadingPix] = useState(false);
@@ -164,7 +164,7 @@ export default function App() {
             amount: selectedProduct.price,
             status: 'pending',
             license_key: `FORJA-${Math.random().toString(36).substring(2, 8).toUpperCase()}-2026`,
-            download_url: selectedProduct.download_url || 'https://github.com/anderson-ps1?tab=repositories',
+            download_url: selectedProduct.download_url || 'https://catalogo-apps.vercel.app',
             ref_code: form.refCode || 'DIRETO'
           }
         ]);
@@ -190,15 +190,15 @@ export default function App() {
           email: form.email,
           name: form.name,
           productTitle: selectedProduct.title,
-          downloadUrl: selectedProduct.download_url || 'https://github.com/anderson-ps1?tab=repositories'
+          downloadUrl: selectedProduct.download_url || 'https://catalogo-apps.vercel.app'
         })
       });
     } catch (e) {
       console.log('Notificação enviada por fallback');
     }
 
-    alert(`✅ Pagamento verificado! O link do produto e a chave de licença foram enviados para ${form.email}.`);
-    setSelectedProduct(null);
+    // Passa direto para a tela de Sucesso com o botão de acesso instantâneo!
+    setStep(3);
   };
 
   const handleSearchOrders = async (e) => {
@@ -222,7 +222,7 @@ export default function App() {
               product_title: 'ZapVitrine AI & SaaS', 
               status: 'approved', 
               license_key: 'FORJA-PRO-884X-2026',
-              download_url: 'https://github.com/anderson-ps1?tab=repositories'
+              download_url: 'https://catalogo-apps.vercel.app'
             }
           ]);
         }
@@ -233,7 +233,7 @@ export default function App() {
             product_title: 'ZapVitrine AI & SaaS', 
             status: 'approved', 
             license_key: 'FORJA-PRO-884X-2026',
-            download_url: 'https://github.com/anderson-ps1?tab=repositories'
+            download_url: 'https://catalogo-apps.vercel.app'
           }
         ]);
       }
@@ -257,7 +257,7 @@ export default function App() {
       description: newProd.description,
       thumbnail: newProd.thumbnail || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80',
       techs: ['React', 'Node.js'],
-      download_url: newProd.download_url || 'https://github.com/anderson-ps1?tab=repositories'
+      download_url: newProd.download_url || 'https://catalogo-apps.vercel.app'
     };
 
     if (supabase) {
@@ -308,7 +308,7 @@ export default function App() {
           <>
             <div className="text-center space-y-3">
               <h1 className="text-3xl sm:text-5xl font-black">Templates & Códigos Prontos</h1>
-              <p className="text-sm text-slate-400">Software pronto, landing pages e apps integrados ao Supabase. Baixe instantaneamente após o PIX.</p>
+              <p className="text-sm text-slate-400">Software pronto, landing pages e apps integrados ao Supabase. Baixe e acesse instantaneamente após o PIX.</p>
             </div>
 
             <div className="space-y-4 max-w-3xl mx-auto">
@@ -393,7 +393,9 @@ export default function App() {
                   <div key={idx} className="p-4 bg-slate-950 border border-slate-800 rounded-xl space-y-2 text-xs">
                     <p className="font-bold text-white">{ord.product_title}</p>
                     <p className="font-mono text-cyan-400 text-[10px]">Chave: {ord.license_key}</p>
-                    <a href={ord.download_url} target="_blank" rel="noopener noreferrer" className="block w-full py-2 bg-emerald-500 text-slate-950 font-black uppercase rounded-lg text-center">Acessar Ficheiro / Repositório</a>
+                    <a href={ord.download_url} target="_blank" rel="noopener noreferrer" className="block w-full py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black uppercase rounded-xl text-center transition">
+                      🚀 ACESSAR / INSTALAR APLICATIVO
+                    </a>
                   </div>
                 ))}
               </div>
@@ -470,7 +472,7 @@ export default function App() {
                   <input type="number" placeholder="Preço (R$)" required value={newProd.price} onChange={e => setNewProd({...newProd, price: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white" />
                   <textarea placeholder="Descrição curta" required value={newProd.description} onChange={e => setNewProd({...newProd, description: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white h-20" />
                   <input type="url" placeholder="URL da Imagem (Thumbnail)" value={newProd.thumbnail} onChange={e => setNewProd({...newProd, thumbnail: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white" />
-                  <input type="url" placeholder="URL para Download (.zip ou repositório)" value={newProd.download_url} onChange={e => setNewProd({...newProd, download_url: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white" />
+                  <input type="url" placeholder="Link de Acesso na Vercel (URL do App)" value={newProd.download_url} onChange={e => setNewProd({...newProd, download_url: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white" />
                   <button type="submit" className="w-full py-3 bg-cyan-500 text-slate-950 font-black text-xs uppercase rounded-xl">Publicar Produto no Supabase</button>
                 </form>
               </div>
@@ -479,13 +481,14 @@ export default function App() {
         )}
       </main>
 
+      {/* CHECKOUT MODAL DE 3 ETAPAS */}
       {selectedProduct && (
         <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 space-y-4 relative">
             <button onClick={() => setSelectedProduct(null)} className="absolute top-4 right-4 text-slate-400">✕</button>
             <h3 className="text-base font-bold">{selectedProduct.title}</h3>
 
-            {step === 1 ? (
+            {step === 1 && (
               <form onSubmit={handleGeneratePix} className="space-y-3">
                 <input type="text" placeholder="Seu Nome Completo" required value={form.name} onChange={e => setForm({...form, name: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white" />
                 <input type="email" placeholder="Seu E-mail para receber a licença" required value={form.email} onChange={e => setForm({...form, email: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white" />
@@ -495,7 +498,9 @@ export default function App() {
                   {loadingPix ? 'A Gerar PIX e Registar...' : 'Gerar PIX Mercado Pago'}
                 </button>
               </form>
-            ) : (
+            )}
+
+            {step === 2 && (
               <div className="text-center space-y-3 py-2">
                 {pixData?.qrCodeBase64 && (
                   <img src={`data:image/png;base64,${pixData.qrCodeBase64}`} alt="QR Code PIX" className="w-40 h-40 mx-auto rounded-xl border border-slate-800" />
@@ -513,6 +518,36 @@ export default function App() {
                 </button>
               </div>
             )}
+
+            {step === 3 && (
+              <div className="text-center space-y-4 py-3">
+                <div className="w-12 h-12 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto text-2xl font-black">
+                  ✓
+                </div>
+                <div>
+                  <h4 className="text-base font-bold text-white">Pagamento Confirmado!</h4>
+                  <p className="text-xs text-slate-400 mt-1">Seu produto já está pronto para uso e acesso instantâneo.</p>
+                </div>
+                <div className="p-4 bg-slate-950 border border-slate-800 rounded-2xl text-left space-y-2">
+                  <p className="text-[10px] text-slate-500 uppercase font-bold">Link Direto da Vercel:</p>
+                  <a 
+                    href={selectedProduct.download_url || 'https://catalogo-apps.vercel.app'} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="block w-full py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black text-xs uppercase rounded-xl text-center shadow-lg transition"
+                  >
+                    🚀 ACESSAR / INSTALAR AGORA
+                  </a>
+                </div>
+                <button 
+                  onClick={() => setSelectedProduct(null)} 
+                  className="text-xs text-slate-400 hover:text-white font-bold"
+                >
+                  Fechar janela
+                </button>
+              </div>
+            )}
+
           </div>
         </div>
       )}

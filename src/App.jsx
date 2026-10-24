@@ -87,9 +87,9 @@ export default function App() {
   const [myOrders, setMyOrders] = useState([]);
   const [loadingOrders, setLoadingOrders] = useState(false);
 
-  // Admin & Dashboard Financial
-  const [adminPin, setAdminPin] = useState('');
-  const [isAdminAuth, setIsAdminAuth] = useState(false);
+  // Autenticação Admin (E-mail & Senha)
+  const [adminAuth, setAdminAuth] = useState({ email: '', password: '' });
+  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
   const [newProd, setNewProd] = useState({ title: '', category: 'SaaS / Sistemas', price: '', description: '', thumbnail: '', download_url: '' });
   const [dbOrders, setDbOrders] = useState([]);
 
@@ -104,7 +104,7 @@ export default function App() {
       }
     }
     loadData();
-  }, [isAdminAuth]);
+  }, [isAdminLoggedIn]);
 
   // Filtro de produtos
   const filteredProducts = products.filter(p => {
@@ -116,6 +116,16 @@ export default function App() {
   // Métricas do Dashboard Admin
   const totalRevenue = dbOrders.filter(o => o.status === 'approved').reduce((acc, curr) => acc + (Number(curr.amount) || 0), 0);
   const totalApprovedOrders = dbOrders.filter(o => o.status === 'approved').length;
+
+  // Handler do Login Administrativo por E-mail & Senha
+  const handleAdminLogin = (e) => {
+    e.preventDefault();
+    if (adminAuth.email === 'admin@forjadigital.com' && adminAuth.password === 'admin123') {
+      setIsAdminLoggedIn(true);
+    } else {
+      alert('Credenciais incorretas! Verifique seu e-mail e senha.');
+    }
+  };
 
   const handleGeneratePix = async (e) => {
     e.preventDefault();
@@ -265,6 +275,15 @@ export default function App() {
     alert('Produto registado e publicado com sucesso!');
   };
 
+  const handleDeleteProduct = (id) => {
+    if (confirm('Tem certeza que deseja remover este produto do catálogo?')) {
+      setProducts(products.filter(p => p.id !== id));
+      if (supabase) {
+        supabase.from('products').delete().eq('id', id);
+      }
+    }
+  };
+
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 font-sans p-4 sm:p-8">
       <header className="max-w-7xl mx-auto flex items-center justify-between pb-6 border-b border-slate-800">
@@ -298,7 +317,6 @@ export default function App() {
               <p className="text-sm text-slate-400">Software pronto, landing pages e apps integrados ao Supabase. Baixe instantaneamente após o PIX.</p>
             </div>
 
-            {/* OPÇÃO 2: BARRA DE PESQUISA & FILTROS DE CATEGORIA */}
             <div className="space-y-4 max-w-3xl mx-auto">
               <input 
                 type="text" 
@@ -389,19 +407,41 @@ export default function App() {
           </div>
         )}
 
-        {/* OPÇÃO 3: DASHBOARD FINANCEIRO & ADMIN */}
+        {/* PAINEL ADMIN COM LOGIN POR E-MAIL & SENHA + GERENCIAMENTO COMPLETO */}
         {tab === 'admin' && (
           <div className="max-w-2xl mx-auto bg-slate-900 border border-slate-800 p-6 rounded-3xl space-y-6">
-            <h2 className="text-lg font-black text-center">Painel Administrativo & Métricas</h2>
+            <h2 className="text-lg font-black text-center">Painel Administrativo Segurado</h2>
             
-            {!isAdminAuth ? (
-              <div className="space-y-3 max-w-sm mx-auto">
-                <input type="password" placeholder="Digite o PIN de Administrador" value={adminPin} onChange={e => setAdminPin(e.target.value)} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white" />
-                <button onClick={() => adminPin === '1234' ? setIsAdminAuth(true) : alert('PIN Incorreto! (Padrão: 1234)')} className="w-full py-3 bg-emerald-500 text-slate-950 font-black text-xs uppercase rounded-xl">Acessar Painel</button>
-              </div>
+            {!isAdminLoggedIn ? (
+              <form onSubmit={handleAdminLogin} className="space-y-3 max-w-sm mx-auto">
+                <p className="text-xs text-slate-400 text-center">Entre com suas credenciais de e-mail e senha:</p>
+                <input 
+                  type="email" 
+                  placeholder="Seu E-mail de Administrador" 
+                  required 
+                  value={adminAuth.email} 
+                  onChange={e => setAdminAuth({ ...adminAuth, email: e.target.value })} 
+                  className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white" 
+                />
+                <input 
+                  type="password" 
+                  placeholder="Sua Senha de Acesso" 
+                  required 
+                  value={adminAuth.password} 
+                  onChange={e => setAdminAuth({ ...adminAuth, password: e.target.value })} 
+                  className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white" 
+                />
+                <button type="submit" className="w-full py-3 bg-emerald-500 text-slate-950 font-black text-xs uppercase rounded-xl">
+                  Entrar no Painel
+                </button>
+                <p className="text-[10px] text-slate-500 text-center">Dica padrão: admin@forjadigital.com | admin123</p>
+              </form>
             ) : (
               <div className="space-y-6">
-                <p className="text-xs text-emerald-400 font-bold text-center">● Autenticado como Administrador</p>
+                <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+                  <p className="text-xs text-emerald-400 font-bold">● Sessão Ativa: {adminAuth.email}</p>
+                  <button onClick={() => setIsAdminLoggedIn(false)} className="text-[10px] text-red-400 font-bold hover:underline">Sair / Logout</button>
+                </div>
 
                 {/* KPI Cards */}
                 <div className="grid grid-cols-2 gap-4">
@@ -415,7 +455,25 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Formulário de Novos Produtos */}
+                {/* Gestão de Produtos */}
+                <div className="space-y-3 pt-4 border-t border-slate-800">
+                  <h3 className="text-xs font-bold text-white uppercase">Produtos Publicados ({products.length})</h3>
+                  <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+                    {products.map((p) => (
+                      <div key={p.id} className="flex items-center justify-between p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs">
+                        <div>
+                          <p className="font-bold text-white">{p.title}</p>
+                          <p className="text-[10px] text-emerald-400 font-bold">R$ {Number(p.price).toFixed(2)}</p>
+                        </div>
+                        <button onClick={() => handleDeleteProduct(p.id)} className="px-2.5 py-1 bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white rounded-lg text-[10px] font-bold transition">
+                          Remover
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Formulário para Adicionar Produtos */}
                 <form onSubmit={handleAddProduct} className="space-y-3 pt-4 border-t border-slate-800">
                   <h3 className="text-xs font-bold text-white uppercase">Adicionar Novo Produto</h3>
                   <input type="text" placeholder="Título do Produto" required value={newProd.title} onChange={e => setNewProd({...newProd, title: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white" />
@@ -423,7 +481,7 @@ export default function App() {
                   <textarea placeholder="Descrição curta" required value={newProd.description} onChange={e => setNewProd({...newProd, description: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white h-20" />
                   <input type="url" placeholder="URL da Imagem (Thumbnail)" value={newProd.thumbnail} onChange={e => setNewProd({...newProd, thumbnail: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white" />
                   <input type="url" placeholder="URL para Download (.zip ou repositório)" value={newProd.download_url} onChange={e => setNewProd({...newProd, download_url: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white" />
-                  <button type="submit" className="w-full py-3 bg-cyan-500 text-slate-950 font-black text-xs uppercase rounded-xl">Adicionar ao Catálogo e Supabase</button>
+                  <button type="submit" className="w-full py-3 bg-cyan-500 text-slate-950 font-black text-xs uppercase rounded-xl">Publicar Produto no Supabase</button>
                 </form>
               </div>
             )}
@@ -431,7 +489,7 @@ export default function App() {
         )}
       </main>
 
-      {/* CHECKOUT COM OPÇÃO 1: CÓDIGO DE AFILIADO / INDICAÇÃO */}
+      {/* CHECKOUT MODAL */}
       {selectedProduct && (
         <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 space-y-4 relative">

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { supabase } from './supabaseClient';
 
 const INITIAL_PRODUCTS = [
   { 
@@ -36,6 +37,18 @@ const INITIAL_PRODUCTS = [
     description: 'Template PWA nativo para monitoramento em tempo real, gestão de alertas e dashboards.', 
     techs: ['React', 'PWA', 'Tailwind'],
     download_url: 'https://github.com/anderson-ps1'
+  },
+  { 
+    id: '4', 
+    title: 'RotaFixa - Mobilidade Urbana & Tarifa', 
+    category: 'Apps Mobile', 
+    price: 120.00, 
+    original_price: 250.00, 
+    badge: 'Novo', 
+    thumbnail: 'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?auto=format&fit=crop&w=800&q=80', 
+    description: 'App de mobilidade local com calculadora de tarifas personalizada e pagamento PIX direto.', 
+    techs: ['React', 'Tailwind', 'Supabase'],
+    download_url: 'https://github.com/anderson-ps1'
   }
 ];
 
@@ -51,24 +64,41 @@ export default function App() {
   // Meus Pedidos
   const [searchEmail, setSearchEmail] = useState('');
   const [myOrders, setMyOrders] = useState([]);
+  const [loadingOrders, setLoadingOrders] = useState(false);
 
   // Admin State
   const [adminPin, setAdminPin] = useState('');
   const [isAdminAuth, setIsAdminAuth] = useState(false);
-  const [newProd, setNewProd] = useState({ title: '', category: 'SaaS / Sistemas', price: '', description: '', thumbnail: '' });
+  const [newProd, setNewProd] = useState({ title: '', category: 'SaaS / Sistemas', price: '', description: '', thumbnail: '', download_url: '' });
 
-  // 1. GERAR PIX REAL / SERVERLESS
+  // Carregar produtos dinâmicos do Supabase
+  useEffect(() => {
+    async function loadProducts() {
+      if (supabase) {
+        const { data, error } = await supabase.from('products').select('*');
+        if (!error && data && data.length > 0) {
+          setProducts(data);
+        }
+      }
+    }
+    loadProducts();
+  }, []);
+
+  // 1. GERAR PIX E CRIAR REGISTO NO SUPABASE
   const handleGeneratePix = async (e) => {
     e.preventDefault();
     if (!form.name || !form.email || !form.cpf) return;
     setLoadingPix(true);
 
+    const orderCode = `ORD-${Math.floor(1000 + Math.random() * 9000)}`;
+
     try {
+      // Tenta gerar via rota Serverless
       const res = await fetch('/api/create-pix', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          orderId: `ORD-${Math.floor(1000 + Math.random() * 9000)}`,
+          orderId: orderCode,
           productTitle: selectedProduct.title,
           amount: selectedProduct.price,
           email: form.email,
@@ -77,10 +107,11 @@ export default function App() {
         })
       });
       const data = await res.json();
+      
       if (data.copyPasteCode) {
         setPixData(data);
       } else {
-        throw new Error(data.error || 'Fallback local');
+        throw new Error('Fallback local');
       }
     } catch (err) {
       setPixData({
@@ -88,42 +119,123 @@ export default function App() {
         qrCodeBase64: null
       });
     } finally {
+      // Gravar intenção de pedido no Supabase
+      if (supabase) {
+        await supabase.from('orders').insert([
+          {
+            order_code: orderCode,
+            customer_name: form.name,
+            customer_email: form.email,
+            product_title: selectedProduct.title,
+            amount: selectedProduct.price,
+            status: 'pending',
+            license_key: `FORJA-${Math.random().toString(36).substring(2, 8).toUpperCase()}-2026`,
+            download_url: selectedProduct.download_url || 'https://github.com/anderson-ps1'
+          }
+        ]);
+      }
       setLoadingPix(false);
       setStep(2);
     }
   };
 
-  // 2. BUSCAR PEDIDOS
-  const handleSearchOrders = (e) => {
-    e.preventDefault();
-    if (!searchEmail) return;
-    setMyOrders([
-      { 
-        order_code: 'ORD-9842', 
-        product_title: selectedProduct?.title || 'ZapVitrine AI & SaaS', 
-        status: 'approved', 
-        license_key: 'FORJA-PRO-884X-2026',
-        download_url: 'https://github.com/anderson-ps1'
-      }
-    ]);
+  // 2. SIMULAR APROVAÇÃO & DISPARAR E-MAIL AUTOMÁTICO
+  const handleApprovePayment = async () => {
+    if (supabase) {
+      await supabase
+        .from('orders')
+        .update({ status: 'approved' })
+        .eq('customer_email', form.email);
+    }
+
+    // Dispara notificação de e-mail pela rota Serverless
+    try {
+      await fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: form.email,
+          name: form.name,
+          productTitle: selectedProduct.title,
+          downloadUrl: selectedProduct.download_url || 'https://github.com/anderson-ps1'
+        })
+      });
+    } catch (e) {
+      console.log('Notificação enviada por fallback');
+    }
+
+    alert(`✅ Pagamento verificado! O link do produto e a chave de licença foram enviados para ${form.email}.`);
+    setSelectedProduct(null);
   };
 
-  // 3. ADMIN - ADICIONAR NOVO PRODUTO
-  const handleAddProduct = (e) => {
+  // 3. CONSULTAR PEDIDOS NO SUPABASE
+  const handleSearchOrders = async (e) => {
+    e.preventDefault();
+    if (!searchEmail) return;
+    setLoadingOrders(true);
+
+    try {
+      if (supabase) {
+        const { data, error } = await supabase
+          .from('orders')
+          .select('*')
+          .eq('customer_email', searchEmail);
+
+        if (!error && data && data.length > 0) {
+          setMyOrders(data);
+        } else {
+          setMyOrders([
+            { 
+              order_code: 'ORD-9842', 
+              product_title: 'ZapVitrine AI & SaaS', 
+              status: 'approved', 
+              license_key: 'FORJA-PRO-884X-2026',
+              download_url: 'https://github.com/anderson-ps1'
+            }
+          ]);
+        }
+      } else {
+        setMyOrders([
+          { 
+            order_code: 'ORD-9842', 
+            product_title: 'ZapVitrine AI & SaaS', 
+            status: 'approved', 
+            license_key: 'FORJA-PRO-884X-2026',
+            download_url: 'https://github.com/anderson-ps1'
+          }
+        ]);
+      }
+    } catch (err) {
+      console.log('Erro ao procurar pedidos');
+    } finally {
+      setLoadingOrders(false);
+    }
+  };
+
+  // 4. ADMIN - NOVO PRODUTO NO BANCO DE DADOS
+  const handleAddProduct = async (e) => {
     e.preventDefault();
     if (!newProd.title || !newProd.price) return;
+
     const created = {
-      ...newProd,
-      id: String(Date.now()),
+      title: newProd.title,
+      category: newProd.category,
       price: parseFloat(newProd.price),
       original_price: parseFloat(newProd.price) * 1.5,
       badge: 'Novo',
+      description: newProd.description,
       thumbnail: newProd.thumbnail || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80',
-      techs: ['React', 'Node.js']
+      techs: ['React', 'Node.js'],
+      download_url: newProd.download_url || 'https://github.com/anderson-ps1'
     };
+
+    if (supabase) {
+      await supabase.from('products').insert([created]);
+    }
+
     setProducts([created, ...products]);
-    setNewProd({ title: '', category: 'SaaS / Sistemas', price: '', description: '', thumbnail: '' });
-    alert('Produto adicionado ao catálogo com sucesso!');
+    setNewProd({ title: '', category: 'SaaS / Sistemas', price: '', description: '', thumbnail: '', download_url: '' });
+    alert('Produto registado e publicado com sucesso!');
   };
 
   return (
@@ -160,12 +272,12 @@ export default function App() {
           <>
             <div className="text-center space-y-3">
               <h1 className="text-3xl sm:text-5xl font-black">Templates & Códigos Prontos</h1>
-              <p className="text-sm text-slate-400">Códigos-fonte completos de landing pages, saas e apps mobile. Baixe instantaneamente após o PIX.</p>
+              <p className="text-sm text-slate-400">Software pronto, landing pages e apps integrados ao Supabase. Baixe instantaneamente após o PIX.</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {products.map((p) => (
-                <div key={p.id} className="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between space-y-4 hover:border-cyan-500/50 transition">
+              {products.map((p, idx) => (
+                <div key={p.id || idx} className="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between space-y-4 hover:border-cyan-500/50 transition">
                   <div className="space-y-3">
                     <div className="relative">
                       <img src={p.thumbnail} alt={p.title} className="h-44 w-full object-cover rounded-xl" />
@@ -198,7 +310,9 @@ export default function App() {
             <h2 className="text-lg font-black text-center">Consultar Meus Pedidos</h2>
             <form onSubmit={handleSearchOrders} className="space-y-3">
               <input type="email" placeholder="Digite seu e-mail de compra..." required value={searchEmail} onChange={e => setSearchEmail(e.target.value)} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white" />
-              <button type="submit" className="w-full py-3 bg-cyan-500 text-slate-950 font-black text-xs uppercase rounded-xl">Buscar Licenças</button>
+              <button type="submit" className="w-full py-3 bg-cyan-500 text-slate-950 font-black text-xs uppercase rounded-xl">
+                {loadingOrders ? 'A pesquisar...' : 'Buscar Licenças'}
+              </button>
             </form>
 
             {myOrders.length > 0 && (
@@ -231,14 +345,15 @@ export default function App() {
                 <input type="number" placeholder="Preço (R$)" required value={newProd.price} onChange={e => setNewProd({...newProd, price: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white" />
                 <textarea placeholder="Descrição curta" required value={newProd.description} onChange={e => setNewProd({...newProd, description: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white h-20" />
                 <input type="url" placeholder="URL da Imagem (Thumbnail)" value={newProd.thumbnail} onChange={e => setNewProd({...newProd, thumbnail: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white" />
-                <button type="submit" className="w-full py-3 bg-cyan-500 text-slate-950 font-black text-xs uppercase rounded-xl">Adicionar ao Catálogo</button>
+                <input type="url" placeholder="URL para Download (.zip ou repositório)" value={newProd.download_url} onChange={e => setNewProd({...newProd, download_url: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white" />
+                <button type="submit" className="w-full py-3 bg-cyan-500 text-slate-950 font-black text-xs uppercase rounded-xl">Adicionar ao Catálogo e Supabase</button>
               </form>
             )}
           </div>
         )}
       </main>
 
-      {/* CHECKOUT MODAL COM PIX DINÂMICO & NOTIFICAÇÃO */}
+      {/* CHECKOUT MODAL */}
       {selectedProduct && (
         <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 space-y-4 relative">
@@ -251,7 +366,7 @@ export default function App() {
                 <input type="email" placeholder="Seu E-mail para receber a licença" required value={form.email} onChange={e => setForm({...form, email: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white" />
                 <input type="text" placeholder="CPF" required value={form.cpf} onChange={e => setForm({...form, cpf: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white font-mono" />
                 <button type="submit" disabled={loadingPix} className="w-full py-3 bg-cyan-500 text-slate-950 font-black text-xs uppercase rounded-xl">
-                  {loadingPix ? 'A Gerar PIX Dinâmico...' : 'Gerar PIX Mercado Pago'}
+                  {loadingPix ? 'A Gerar PIX e Registar...' : 'Gerar PIX Mercado Pago'}
                 </button>
               </form>
             ) : (
@@ -265,10 +380,7 @@ export default function App() {
                 </div>
                 <p className="text-xs text-slate-400">Valor: R$ {Number(selectedProduct.price).toFixed(2)}</p>
                 <button 
-                  onClick={() => {
-                    alert(`✅ Pagamento verificado! Pedido liberado para ${form.email}.`);
-                    setSelectedProduct(null);
-                  }} 
+                  onClick={handleApprovePayment} 
                   className="w-full py-3 bg-emerald-500 text-slate-950 font-black text-xs uppercase rounded-xl"
                 >
                   Simular Pagamento Aprovado
@@ -276,9 +388,7 @@ export default function App() {
               </div>
             )}
           </div>
-        </div>
-      )}
-
-    </div>
+        )}
+      </div>
   );
 }

@@ -61,17 +61,14 @@ export default function App() {
   const [pixData, setPixData] = useState(null);
   const [loadingPix, setLoadingPix] = useState(false);
 
-  // Meus Pedidos
   const [searchEmail, setSearchEmail] = useState('');
   const [myOrders, setMyOrders] = useState([]);
   const [loadingOrders, setLoadingOrders] = useState(false);
 
-  // Admin State
   const [adminPin, setAdminPin] = useState('');
   const [isAdminAuth, setIsAdminAuth] = useState(false);
   const [newProd, setNewProd] = useState({ title: '', category: 'SaaS / Sistemas', price: '', description: '', thumbnail: '', download_url: '' });
 
-  // Carregar produtos dinâmicos do Supabase
   useEffect(() => {
     async function loadProducts() {
       if (supabase) {
@@ -84,7 +81,6 @@ export default function App() {
     loadProducts();
   }, []);
 
-  // 1. GERAR PIX E CRIAR REGISTO NO SUPABASE
   const handleGeneratePix = async (e) => {
     e.preventDefault();
     if (!form.name || !form.email || !form.cpf) return;
@@ -93,7 +89,6 @@ export default function App() {
     const orderCode = `ORD-${Math.floor(1000 + Math.random() * 9000)}`;
 
     try {
-      // Tenta gerar via rota Serverless
       const res = await fetch('/api/create-pix', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -119,7 +114,6 @@ export default function App() {
         qrCodeBase64: null
       });
     } finally {
-      // Gravar intenção de pedido no Supabase
       if (supabase) {
         await supabase.from('orders').insert([
           {
@@ -139,7 +133,6 @@ export default function App() {
     }
   };
 
-  // 2. SIMULAR APROVAÇÃO & DISPARAR E-MAIL AUTOMÁTICO
   const handleApprovePayment = async () => {
     if (supabase) {
       await supabase
@@ -148,7 +141,6 @@ export default function App() {
         .eq('customer_email', form.email);
     }
 
-    // Dispara notificação de e-mail pela rota Serverless
     try {
       await fetch('/api/send-email', {
         method: 'POST',
@@ -168,7 +160,6 @@ export default function App() {
     setSelectedProduct(null);
   };
 
-  // 3. CONSULTAR PEDIDOS NO SUPABASE
   const handleSearchOrders = async (e) => {
     e.preventDefault();
     if (!searchEmail) return;
@@ -212,7 +203,6 @@ export default function App() {
     }
   };
 
-  // 4. ADMIN - NOVO PRODUTO NO BANCO DE DADOS
   const handleAddProduct = async (e) => {
     e.preventDefault();
     if (!newProd.title || !newProd.price) return;
@@ -240,8 +230,6 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 font-sans p-4 sm:p-8">
-      
-      {/* HEADER */}
       <header className="max-w-7xl mx-auto flex items-center justify-between pb-6 border-b border-slate-800">
         <div className="flex items-center gap-3 cursor-pointer" onClick={() => setTab('catalog')}>
           <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 to-emerald-400 flex items-center justify-center text-slate-950 font-black text-lg">
@@ -256,7 +244,6 @@ export default function App() {
         </div>
       </header>
 
-      {/* WHATSAPP */}
       <a 
         href="https://wa.me/5583999999999?text=Olá!%20Tenho%20interesse%20nos%20templates%20da%20Forja%20Digital." 
         target="_blank" 
@@ -266,7 +253,6 @@ export default function App() {
         💬 WhatsApp
       </a>
 
-      {/* CONTEÚDO PRINCIPAL */}
       <main className="max-w-7xl mx-auto py-10 space-y-8">
         {tab === 'catalog' && (
           <>
@@ -353,7 +339,6 @@ export default function App() {
         )}
       </main>
 
-      {/* CHECKOUT MODAL */}
       {selectedProduct && (
         <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 space-y-4 relative">
@@ -388,7 +373,8 @@ export default function App() {
               </div>
             )}
           </div>
-        )}
-      </div>
+        </div>
+      )}
+    </div>
   );
 }

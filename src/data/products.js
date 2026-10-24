@@ -7,7 +7,7 @@ export const products = [
     badge: "NOVO",
     price: "R$ 47,00",
     originalPrice: "R$ 70,50",
-    image: "https://legalese-translator-alpha.vercel.app/assets/legalese-thumbnail.jpg",
+    image: "/assets/legalese-thumbnail.jpg",
     link: "https://legalese-translator-alpha.vercel.app",
     checkoutLink: "https://mpago.la/1Gc1o3z"
   },

@@ -49,7 +49,24 @@ const INITIAL_PRODUCTS = [
     description: 'App de mobilidade local com calculadora de tarifas personalizada e pagamento PIX direto.', 
     techs: ['React', 'Tailwind', 'Supabase'],
     download_url: 'https://github.com/anderson-ps1'
+  },
+  { 
+    id: '5', 
+    title: 'Passaporte All-Access (Assinatura Anual)', 
+    category: 'Recorrência / VIP', 
+    price: 297.00, 
+    original_price: 697.00, 
+    badge: 'Melhor Valor', 
+    thumbnail: 'https://images.unsplash.com/photo-1553877522-43269d4ea984?auto=format&fit=crop&w=800&q=80', 
+    description: 'Acesso vitalício ou anual a todos os códigos-fonte atuais e futuros lançamentos da Forja Digital.', 
+    techs: ['All Access', 'VIP Support'],
+    download_url: 'https://github.com/anderson-ps1'
   }
+];
+
+const TESTIMONIALS = [
+  { name: 'Carlos Eduardo', role: 'Desenvolvedor Front-End', comment: 'Comprei o template do ZapVitrine e implementei para um cliente em menos de 2 dias. Qualidade de código impecável!' },
+  { name: 'Marcos Vinícius', role: 'Empreendedor Local', comment: 'O RotaFixa abriu portas para o nosso serviço de entregas aqui na região. Suporte e entrega instantânea excelente.' }
 ];
 
 export default function App() {
@@ -253,7 +270,7 @@ export default function App() {
         💬 WhatsApp
       </a>
 
-      <main className="max-w-7xl mx-auto py-10 space-y-8">
+      <main className="max-w-7xl mx-auto py-10 space-y-12">
         {tab === 'catalog' && (
           <>
             <div className="text-center space-y-3">
@@ -287,6 +304,22 @@ export default function App() {
                   </div>
                 </div>
               ))}
+            </div>
+
+            {/* SEÇÃO DE DEPOIMENTOS / PROVA SOCIAL */}
+            <div className="pt-10 border-t border-slate-800 space-y-6">
+              <h2 className="text-xl font-black text-center">O que dizem os nossos clientes</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {TESTIMONIALS.map((t, idx) => (
+                  <div key={idx} className="bg-slate-900/60 border border-slate-800 p-5 rounded-2xl space-y-3">
+                    <p className="text-xs text-slate-300 italic">"{t.comment}"</p>
+                    <div>
+                      <p className="text-xs font-bold text-cyan-400">{t.name}</p>
+                      <p className="text-[10px] text-slate-500">{t.role}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </>
         )}

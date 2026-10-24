@@ -74,29 +74,48 @@ export default function App() {
   const [products, setProducts] = useState(INITIAL_PRODUCTS);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [step, setStep] = useState(1);
-  const [form, setForm] = useState({ name: '', email: '', cpf: '' });
+  const [form, setForm] = useState({ name: '', email: '', cpf: '', refCode: '' });
   const [pixData, setPixData] = useState(null);
   const [loadingPix, setLoadingPix] = useState(false);
 
+  // Filtros & Pesquisa
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('Todos');
+
+  // Meus Pedidos
   const [searchEmail, setSearchEmail] = useState('');
   const [myOrders, setMyOrders] = useState([]);
   const [loadingOrders, setLoadingOrders] = useState(false);
 
+  // Admin & Dashboard Financial
   const [adminPin, setAdminPin] = useState('');
   const [isAdminAuth, setIsAdminAuth] = useState(false);
   const [newProd, setNewProd] = useState({ title: '', category: 'SaaS / Sistemas', price: '', description: '', thumbnail: '', download_url: '' });
+  const [dbOrders, setDbOrders] = useState([]);
 
   useEffect(() => {
-    async function loadProducts() {
+    async function loadData() {
       if (supabase) {
-        const { data, error } = await supabase.from('products').select('*');
-        if (!error && data && data.length > 0) {
-          setProducts(data);
-        }
+        const { data: prodData } = await supabase.from('products').select('*');
+        if (prodData && prodData.length > 0) setProducts(prodData);
+
+        const { data: ordData } = await supabase.from('orders').select('*');
+        if (ordData) setDbOrders(ordData);
       }
     }
-    loadProducts();
-  }, []);
+    loadData();
+  }, [isAdminAuth]);
+
+  // Filtro de produtos
+  const filteredProducts = products.filter(p => {
+    const matchesCategory = selectedCategory === 'Todos' || p.category === selectedCategory;
+    const matchesSearch = p.title.toLowerCase().includes(searchTerm.toLowerCase()) || p.description.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
+
+  // Métricas do Dashboard Admin
+  const totalRevenue = dbOrders.filter(o => o.status === 'approved').reduce((acc, curr) => acc + (Number(curr.amount) || 0), 0);
+  const totalApprovedOrders = dbOrders.filter(o => o.status === 'approved').length;
 
   const handleGeneratePix = async (e) => {
     e.preventDefault();
@@ -141,7 +160,8 @@ export default function App() {
             amount: selectedProduct.price,
             status: 'pending',
             license_key: `FORJA-${Math.random().toString(36).substring(2, 8).toUpperCase()}-2026`,
-            download_url: selectedProduct.download_url || 'https://github.com/anderson-ps1'
+            download_url: selectedProduct.download_url || 'https://github.com/anderson-ps1',
+            ref_code: form.refCode || 'DIRETO'
           }
         ]);
       }
@@ -270,7 +290,7 @@ export default function App() {
         💬 WhatsApp
       </a>
 
-      <main className="max-w-7xl mx-auto py-10 space-y-12">
+      <main className="max-w-7xl mx-auto py-10 space-y-10">
         {tab === 'catalog' && (
           <>
             <div className="text-center space-y-3">
@@ -278,8 +298,30 @@ export default function App() {
               <p className="text-sm text-slate-400">Software pronto, landing pages e apps integrados ao Supabase. Baixe instantaneamente após o PIX.</p>
             </div>
 
+            {/* OPÇÃO 2: BARRA DE PESQUISA & FILTROS DE CATEGORIA */}
+            <div className="space-y-4 max-w-3xl mx-auto">
+              <input 
+                type="text" 
+                placeholder="🔍 Pesquisar por nome ou tecnologia..." 
+                value={searchTerm} 
+                onChange={e => setSearchTerm(e.target.value)} 
+                className="w-full p-3.5 bg-slate-900 border border-slate-800 rounded-2xl text-xs text-white focus:outline-none focus:border-cyan-500 transition"
+              />
+              <div className="flex flex-wrap gap-2 justify-center">
+                {['Todos', 'SaaS / Sistemas', 'Apps Mobile', 'Jogos Indie', 'Recorrência / VIP'].map((cat) => (
+                  <button 
+                    key={cat} 
+                    onClick={() => setSelectedCategory(cat)} 
+                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition ${selectedCategory === cat ? 'bg-cyan-500 text-slate-950' : 'bg-slate-900 border border-slate-800 text-slate-400 hover:text-white'}`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {products.map((p, idx) => (
+              {filteredProducts.map((p, idx) => (
                 <div key={p.id || idx} className="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between space-y-4 hover:border-cyan-500/50 transition">
                   <div className="space-y-3">
                     <div className="relative">
@@ -306,7 +348,6 @@ export default function App() {
               ))}
             </div>
 
-            {/* SEÇÃO DE DEPOIMENTOS / PROVA SOCIAL */}
             <div className="pt-10 border-t border-slate-800 space-y-6">
               <h2 className="text-xl font-black text-center">O que dizem os nossos clientes</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -348,30 +389,49 @@ export default function App() {
           </div>
         )}
 
+        {/* OPÇÃO 3: DASHBOARD FINANCEIRO & ADMIN */}
         {tab === 'admin' && (
-          <div className="max-w-lg mx-auto bg-slate-900 border border-slate-800 p-6 rounded-3xl space-y-6">
-            <h2 className="text-lg font-black text-center">Painel Administrativo</h2>
+          <div className="max-w-2xl mx-auto bg-slate-900 border border-slate-800 p-6 rounded-3xl space-y-6">
+            <h2 className="text-lg font-black text-center">Painel Administrativo & Métricas</h2>
             
             {!isAdminAuth ? (
-              <div className="space-y-3">
+              <div className="space-y-3 max-w-sm mx-auto">
                 <input type="password" placeholder="Digite o PIN de Administrador" value={adminPin} onChange={e => setAdminPin(e.target.value)} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white" />
                 <button onClick={() => adminPin === '1234' ? setIsAdminAuth(true) : alert('PIN Incorreto! (Padrão: 1234)')} className="w-full py-3 bg-emerald-500 text-slate-950 font-black text-xs uppercase rounded-xl">Acessar Painel</button>
               </div>
             ) : (
-              <form onSubmit={handleAddProduct} className="space-y-3">
+              <div className="space-y-6">
                 <p className="text-xs text-emerald-400 font-bold text-center">● Autenticado como Administrador</p>
-                <input type="text" placeholder="Título do Produto" required value={newProd.title} onChange={e => setNewProd({...newProd, title: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white" />
-                <input type="number" placeholder="Preço (R$)" required value={newProd.price} onChange={e => setNewProd({...newProd, price: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white" />
-                <textarea placeholder="Descrição curta" required value={newProd.description} onChange={e => setNewProd({...newProd, description: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white h-20" />
-                <input type="url" placeholder="URL da Imagem (Thumbnail)" value={newProd.thumbnail} onChange={e => setNewProd({...newProd, thumbnail: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white" />
-                <input type="url" placeholder="URL para Download (.zip ou repositório)" value={newProd.download_url} onChange={e => setNewProd({...newProd, download_url: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white" />
-                <button type="submit" className="w-full py-3 bg-cyan-500 text-slate-950 font-black text-xs uppercase rounded-xl">Adicionar ao Catálogo e Supabase</button>
-              </form>
+
+                {/* KPI Cards */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-1">
+                    <p className="text-[10px] text-slate-400 uppercase font-bold">Faturamento Total</p>
+                    <p className="text-lg font-black text-emerald-400">R$ {totalRevenue.toFixed(2)}</p>
+                  </div>
+                  <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-1">
+                    <p className="text-[10px] text-slate-400 uppercase font-bold">Vendas Aprovadas</p>
+                    <p className="text-lg font-black text-cyan-400">{totalApprovedOrders} pedidos</p>
+                  </div>
+                </div>
+
+                {/* Formulário de Novos Produtos */}
+                <form onSubmit={handleAddProduct} className="space-y-3 pt-4 border-t border-slate-800">
+                  <h3 className="text-xs font-bold text-white uppercase">Adicionar Novo Produto</h3>
+                  <input type="text" placeholder="Título do Produto" required value={newProd.title} onChange={e => setNewProd({...newProd, title: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white" />
+                  <input type="number" placeholder="Preço (R$)" required value={newProd.price} onChange={e => setNewProd({...newProd, price: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white" />
+                  <textarea placeholder="Descrição curta" required value={newProd.description} onChange={e => setNewProd({...newProd, description: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white h-20" />
+                  <input type="url" placeholder="URL da Imagem (Thumbnail)" value={newProd.thumbnail} onChange={e => setNewProd({...newProd, thumbnail: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white" />
+                  <input type="url" placeholder="URL para Download (.zip ou repositório)" value={newProd.download_url} onChange={e => setNewProd({...newProd, download_url: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white" />
+                  <button type="submit" className="w-full py-3 bg-cyan-500 text-slate-950 font-black text-xs uppercase rounded-xl">Adicionar ao Catálogo e Supabase</button>
+                </form>
+              </div>
             )}
           </div>
         )}
       </main>
 
+      {/* CHECKOUT COM OPÇÃO 1: CÓDIGO DE AFILIADO / INDICAÇÃO */}
       {selectedProduct && (
         <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 space-y-4 relative">
@@ -383,6 +443,7 @@ export default function App() {
                 <input type="text" placeholder="Seu Nome Completo" required value={form.name} onChange={e => setForm({...form, name: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white" />
                 <input type="email" placeholder="Seu E-mail para receber a licença" required value={form.email} onChange={e => setForm({...form, email: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white" />
                 <input type="text" placeholder="CPF" required value={form.cpf} onChange={e => setForm({...form, cpf: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white font-mono" />
+                <input type="text" placeholder="Código de Indicação / Afiliado (Opcional)" value={form.refCode} onChange={e => setForm({...form, refCode: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white font-mono" />
                 <button type="submit" disabled={loadingPix} className="w-full py-3 bg-cyan-500 text-slate-950 font-black text-xs uppercase rounded-xl">
                   {loadingPix ? 'A Gerar PIX e Registar...' : 'Gerar PIX Mercado Pago'}
                 </button>
